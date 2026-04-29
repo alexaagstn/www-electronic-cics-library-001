@@ -1,3 +1,4 @@
 <?php
 
+    echo "something new";
 ?>
