@@ -146,8 +146,8 @@
                 </span>
                 <input type="text" id="r-id"
                     placeholder="e.g., 2026XXXXXX"
-                    pattern="^\d{4}-\d{5}-[A-Z]{2}-\d$"
-                    title="Format: YYYY-NNNNN-XX-N"
+                    pattern="^\d{10}$"
+                    title="UST ID must contain 10 digits only"
                     autocomplete="off" required />
             </div>
         </div>
@@ -161,9 +161,12 @@
                         <polyline points="22,6 12,13 2,6"/>
                     </svg>
                 </span>
-                <input type="email" id="r-email"
-                    placeholder="juan.santos@ust.edu.ph"
-                    autocomplete="email" required />
+                    <input type="email" id="r-email"
+                        placeholder="juan.santos@ust.edu.ph"
+                        pattern="^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$"
+                        title="UST email only"
+                        autocomplete="email"
+                        required />
             </div>
         </div>
 

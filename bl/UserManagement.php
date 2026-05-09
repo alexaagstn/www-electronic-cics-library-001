@@ -83,6 +83,12 @@ class UserManagement {
 
     public function registerUserFunc($ustID, $firstName, $lastName, $email, $password, $role, $username, $course, $year) {
         try {
+
+        if (!str_ends_with(strtolower($email), "@ust.edu.ph")) {
+                echo "invalid_email";
+                return;
+            }
+
             $checkQuery = "SELECT * FROM users_tbl WHERE email = :email OR ust_id = :ustID";
             $checkResponse = $this->conn->prepare($checkQuery);
             $checkResponse->bindParam(":email", $email);

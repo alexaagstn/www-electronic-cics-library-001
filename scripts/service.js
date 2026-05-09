@@ -264,6 +264,12 @@ function doRegister() {
         return;
     }
 
+    if (!/^\d{10}$/.test(ustID)) {
+        document.getElementById("reg-alert").classList.add("show");
+        document.getElementById("reg-alert").innerHTML = "UST ID must contain exactly 10 digits.";
+        return;
+    }
+       
     if (selectedRole === "student" && (course === "" || year === "")) {
         document.getElementById("reg-alert").classList.add("show");
         document.getElementById("reg-alert").innerHTML = "Please fill in all required fields.";
@@ -273,6 +279,12 @@ function doRegister() {
     if (password !== confirmPassword) {
         document.getElementById("reg-alert").classList.add("show");
         document.getElementById("reg-alert").innerHTML = "Passwords do not match.";
+        return;
+    }
+
+    if (!email.toLowerCase().endsWith("@ust.edu.ph")) {
+        document.getElementById("reg-alert").classList.add("show");
+        document.getElementById("reg-alert").innerHTML = "Please use your UST email address only.";
         return;
     }
 
@@ -305,6 +317,10 @@ function doRegister() {
             else if (returnedData == "exists") {
                 document.getElementById("reg-alert").classList.add("show");
                 document.getElementById("reg-alert").innerHTML = "UST ID or Email already exists.";
+            }
+            else if (returnedData == "invalid_email") {
+                    document.getElementById("reg-alert").classList.add("show");
+                    document.getElementById("reg-alert").innerHTML = "UST email only.";
             }
             else {
                 document.getElementById("reg-alert").classList.add("show");
