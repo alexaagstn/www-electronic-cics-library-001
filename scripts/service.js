@@ -183,10 +183,17 @@ function checkStrength() {
 
     let score = 0;
 
-    if (pass.length >= 6) score++;
-    if (/[A-Z]/.test(pass)) score++;
-    if (/[0-9]/.test(pass)) score++;
-    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    let weakPasswords = [
+        "123456",
+        "000000",
+        "abcdef",
+        "password",
+        "login",
+        "qwerty",
+        "p@ssw0rd123"
+    ];
+
+    let lowerPass = pass.toLowerCase();
 
     if (pass.length === 0) {
         fill.style.width = "0%";
@@ -194,21 +201,40 @@ function checkStrength() {
         return;
     }
 
-    if (score === 1) {
+    for (let i = 0; i < weakPasswords.length; i++) {
+
+        if (lowerPass.includes(weakPasswords[i])) {
+            fill.style.width = "25%";
+            fill.style.background = "#F05252";
+            text.innerHTML = "Weak password";
+            return;
+        }
+    }
+
+    if (pass.length >= 12) score++;
+
+    if (/[A-Z]/.test(pass)) score++;
+
+    if (/[a-z]/.test(pass)) score++;
+
+    if (/[0-9]/.test(pass)) score++;
+
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+    if (pass.includes("-")) score++;
+
+    if (score <= 2) {
         fill.style.width = "25%";
         fill.style.background = "#F05252";
         text.innerHTML = "Weak password";
     }
-    else if (score === 2) {
-        fill.style.width = "50%";
+
+    else if (score === 3 || score === 4) {
+        fill.style.width = "60%";
         fill.style.background = "#F0A030";
-        text.innerHTML = "Fair password";
-    }
-    else if (score === 3) {
-        fill.style.width = "75%";
-        fill.style.background = "#3B9FD4";
         text.innerHTML = "Good password";
     }
+
     else {
         fill.style.width = "100%";
         fill.style.background = "#34C47A";

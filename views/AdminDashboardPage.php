@@ -2,7 +2,10 @@
 session_start();
 
 require_once "../bl/UserManagement.php";
+
 $usermanagement = new UserManagement();
+
+// SESSION VALIDATION
 
 if (!isset($_SESSION["user_id"])) {
     header("Location: LoginPage.php");
@@ -14,7 +17,10 @@ if ($_SESSION["role"] != "admin") {
     exit;
 }
 
+
+// ADD MATERIAL
 if (isset($_POST["addMaterialBtn"])) {
+
     $title = $_POST["title"];
     $author = $_POST["author"];
     $category = $_POST["category"];
@@ -28,6 +34,8 @@ if (isset($_POST["addMaterialBtn"])) {
     exit;
 }
 
+
+// FETCH DATABASE DATA
 $users = $usermanagement->getUserFunc();
 $totalUsers = $usermanagement->totalUsersFunc();
 $logs = $usermanagement->getLogsFunc();
@@ -39,44 +47,53 @@ $returnedItems = $usermanagement->returnedItemsFunc();
 $reservedItems = $usermanagement->reservedItemsFunc();
 $weeklyUsage = $usermanagement->weeklyUsageFunc();
 
+// SESSION DATA
 $first_name = $_SESSION["first_name"] ?? "";
 $last_name = $_SESSION["last_name"] ?? "";
 $full_name = trim($first_name . " " . $last_name);
 $role = $_SESSION["role"] ?? "admin";
-
 $avatarInitials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1));
+
+// TOTAL COUNTS
 $totalUserCount = $totalUsers["totalUsers"] ?? 0;
 $totalLogsCount = is_array($logs) ? count($logs) : 0;
+$totalMaterialsCount = $totalMaterials["totalMaterials"] ?? 0;
+$activeBorrowsCount = $activeBorrows["activeBorrows"] ?? 0;
+$returnedItemsCount = $returnedItems["returnedItems"] ?? 0;
+$reservedItemsCount = $reservedItems["reservedItems"] ?? 0;
 
+// USER ROLE COUNTS
 $studentCount = 0;
 $facultyCount = 0;
 $adminCount = 0;
 
 if (!empty($users)) {
+
     foreach ($users as $user) {
+
         if ($user["role"] == "student") {
             $studentCount++;
         }
+
         else if ($user["role"] == "faculty") {
             $facultyCount++;
         }
+
         else if ($user["role"] == "admin") {
             $adminCount++;
         }
     }
 }
 
-$totalMaterialsCount = $totalMaterials["totalMaterials"] ?? 0;
-$activeBorrowsCount = $activeBorrows["activeBorrows"] ?? 0;
-$returnedItemsCount = $returnedItems["returnedItems"] ?? 0;
-$reservedItemsCount = $reservedItems["reservedItems"] ?? 0;
-
+// MATERIAL BREAKDOWN
 $printBooksCount = 0;
 $electronicCount = 0;
 $journalsCount = 0;
 
 if (!empty($materialBreakdown)) {
+
     foreach ($materialBreakdown as $material) {
+
         $type = strtolower(trim($material["material_type"]));
 
         if ($type == "print") {
@@ -91,14 +108,13 @@ if (!empty($materialBreakdown)) {
     }
 }
 
+// COLLECTION PERCENTAGES
 $totalCollectionCount = $printBooksCount + $electronicCount + $journalsCount;
-
 $printBooksPercent = $totalCollectionCount > 0 ? ($printBooksCount / $totalCollectionCount) * 100 : 0;
 $electronicPercent = $totalCollectionCount > 0 ? ($electronicCount / $totalCollectionCount) * 100 : 0;
 $journalsPercent = $totalCollectionCount > 0 ? ($journalsCount / $totalCollectionCount) * 100 : 0;
 
-$weeklyUsage = $usermanagement->weeklyUsageFunc();
-
+// WEEKLY USAGE
 $mondayUsage = 0;
 $tuesdayUsage = 0;
 $wednesdayUsage = 0;
@@ -108,33 +124,41 @@ $saturdayUsage = 0;
 $sundayUsage = 0;
 
 if (!empty($weeklyUsage)) {
+
     foreach ($weeklyUsage as $usage) {
+
         if ($usage["dayName"] == "Monday") {
             $mondayUsage = $usage["totalUsage"];
         }
+
         else if ($usage["dayName"] == "Tuesday") {
             $tuesdayUsage = $usage["totalUsage"];
         }
+
         else if ($usage["dayName"] == "Wednesday") {
             $wednesdayUsage = $usage["totalUsage"];
         }
+
         else if ($usage["dayName"] == "Thursday") {
             $thursdayUsage = $usage["totalUsage"];
         }
+
         else if ($usage["dayName"] == "Friday") {
             $fridayUsage = $usage["totalUsage"];
         }
+
         else if ($usage["dayName"] == "Saturday") {
             $saturdayUsage = $usage["totalUsage"];
         }
+
         else if ($usage["dayName"] == "Sunday") {
             $sundayUsage = $usage["totalUsage"];
         }
     }
 }
 
+// WEEKLY PERCENTAGES
 $maxUsage = max($mondayUsage, $tuesdayUsage, $wednesdayUsage, $thursdayUsage, $fridayUsage, $saturdayUsage, $sundayUsage, 10);
-
 $mondayPercent = ($mondayUsage / $maxUsage) * 100;
 $tuesdayPercent = ($tuesdayUsage / $maxUsage) * 100;
 $wednesdayPercent = ($wednesdayUsage / $maxUsage) * 100;
@@ -626,6 +650,7 @@ $sundayPercent = ($sundayUsage / $maxUsage) * 100;
                                 
     <div id="toast"></div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="../scripts/service.js"></script>
 
     
