@@ -124,6 +124,9 @@ class UserManagement {
                         die("Invalid email");
                     }
 
+                    date_default_timezone_set("Asia/Manila");
+                    $dateRegistered = date("F j, Y h:i A");
+
                 $body = "
                 <div style='background:#f4f6f8; padding:30px; font-family:Tahoma, Arial, sans-serif;'>
 
@@ -149,7 +152,7 @@ class UserManagement {
                             <p style='font-size:13px; color:#444;'><b>Year:</b> $year</p>
 
                             <p style='font-size:13px; color:#444; margin-top:10px;'>
-                                <b>Date Registered:</b> " . date("F j, Y h:i A") . "
+                                <b>Date Registered:</b> $dateRegistered
                             </p>
 
                             <br>
@@ -524,7 +527,7 @@ class UserManagement {
         }
     }
 
-    // LOG / DASHBOARD FUNCTIONS
+    // LOG & DASHBOARD FUNCTIONS
 
     public function getLogsFunc() {
         try {
@@ -563,6 +566,43 @@ class UserManagement {
             exit;
         }
     }
+
+    public function getEResourcesFunc() {
+    $sql = "SELECT * FROM eresources_tbl ORDER BY resource_id DESC";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function updateProfileFunc($userID, $firstName, $lastName, $email, $password) {
+
+    if($password != "") {
+        $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
+
+        $sql = "UPDATE users_tbl 
+                SET first_name = ?, last_name = ?, email = ?, password_hash = ?
+                WHERE user_id = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$firstName, $lastName, $email, $hashedPassword, $userID]);
+    }
+    else {
+        $sql = "UPDATE users_tbl 
+                SET first_name = ?, last_name = ?, email = ?
+                WHERE user_id = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$firstName, $lastName, $email, $userID]);
+    }
+
+    $_SESSION["first_name"] = $firstName;
+    $_SESSION["last_name"] = $lastName;
+    $_SESSION["email"] = $email;
+
+    echo "1";
+}
+
 }
 
 ?>

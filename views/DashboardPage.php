@@ -5,6 +5,7 @@ require_once "../bl/UserManagement.php";
 $usermanagement = new UserManagement();
 
 $materials = $usermanagement->getMaterialsFunc();
+$eresources = $usermanagement->getEResourcesFunc();
 
 $isGuest = isset($_GET["guest"]);
 
@@ -85,7 +86,6 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Sora:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
-    <script src="../scripts/service.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
 </head>
@@ -228,9 +228,9 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
             <div class="topbar-right">
                 <input class="topbar-search" type="text"
-                       placeholder="Quick search…"
-                       aria-label="Quick search"
-                       oninput="quickSearch(this.value)" />
+                    placeholder="Quick search…"
+                    aria-label="Quick search"
+                    onkeydown="topbarSearch(event)" />
 
                 <button class="topbar-notif"
                         onclick="toast('No new notifications.', 'info')"
@@ -251,63 +251,232 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
         </header>
 
         <!-- OVERVIEW -->
-        <section id="p-overview" class="panel active">
-            <div class="sec-head">
-                <div>
-                    <h3>Welcome back, <?php echo htmlspecialchars($first_name); ?></h3>
-                    <p>Continue exploring your resources and stay on track with your studies.</p>
-                </div>
+<section id="p-overview" class="panel active">
+
+    <div class="announcement" id="ann">
+        <div class="ann-text">
+            <strong>Library Hours Update:</strong> Welcome to UST E-Library. Browse materials, manage loans, and access digital resources.
+        </div>
+        <button class="ann-close" onclick="document.getElementById('ann').style.display='none'">×</button>
+    </div>
+
+    <div class="hero-banner">
+        <div class="hero-bg-pattern"></div>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow">✦ University of Santo Tomas</div>
+
+            <h1 class="hero-heading">
+                Welcome back,<br>
+                <em><?php echo htmlspecialchars($first_name); ?></em>
+            </h1>
+
+            <p class="hero-body">
+                Continue exploring your resources and stay on track with your studies.
+            </p>
+
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="showPanel('p-opac', document.querySelector('[onclick*=p-opac]'))">
+                    Search OPAC
+                </button>
+
+                <button class="btn-ghost" onclick="showPanel('p-eres', document.querySelector('[onclick*=p-eres]'))">
+                    Browse E-Resources
+                </button>
+            </div>
+        </div>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number"><?php echo count($materials); ?></div>
+                <div class="hero-stat-label">Total Materials</div>
             </div>
 
-            <!-- divider -->
-            <div class="under-divider"></div>
-
-            <div class="alert error" id="guest-alert"></div>
-
-            <div class="stat-grid" id="stat-grid"></div>
-
-            <div class="overview-grid">
-                <div>
-                    <div class="sec-head">
-                        <div>
-                            <h3>Recent Activity</h3>
-                            <p>Latest system events</p>
-                        </div>
-                    </div>
-
-                    <div class="activity-feed">
-                        <div class="feed-head">
-                            Activity Log
-                            <span style="font-size: 11px; color: var(--muted);" id="feed-count"></span>
-                        </div>
-                        <div id="activity-feed"></div>
-                    </div>
-                </div>
-
-                <div class="quick-stats">
-                    <div class="qs-card">
-                        <div class="qs-title">Collection Breakdown</div>
-                        <div class="progress-item">
-                            <div class="prog-head"><span>Print Books</span><span id="prog-print">0</span></div>
-                            <div class="prog-bar"><div class="prog-fill" id="pf-print" style="background: var(--gold); width: 0%;"></div></div>
-                        </div>
-                        <div class="progress-item">
-                            <div class="prog-head"><span>Electronic</span><span id="prog-elec">0</span></div>
-                            <div class="prog-bar"><div class="prog-fill" id="pf-elec" style="background: var(--info); width: 0%;"></div></div>
-                        </div>
-                        <div class="progress-item">
-                            <div class="prog-head"><span>Journal</span><span id="prog-jour">0</span></div>
-                            <div class="prog-bar"><div class="prog-fill" id="pf-jour" style="background: var(--success); width: 0%;"></div></div>
-                        </div>
-                    </div>
-
-                    <div class="qs-card">
-                        <div class="qs-title">User Breakdown</div>
-                        <div id="user-breakdown"></div>
-                    </div>
-                </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number"><?php echo count($eresources); ?></div>
+                <div class="hero-stat-label">E-Resources</div>
             </div>
-        </section>
+
+            <div class="hero-stat">
+                <div class="hero-stat-number"><?php echo $reservedItemsCount; ?></div>
+                <div class="hero-stat-label">Reservations</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-search">
+        <div class="qs-label">Quick OPAC Search</div>
+
+        <div class="qs-row">
+            <div class="qs-input-wrap">
+                <input type="text"
+                    id="overview-search"
+                    placeholder="Search by title, author, ISBN, category…"
+                    onkeydown="overviewEnterSearch(event)">
+            </div>
+
+            <button class="filter-pill active">All</button>
+            <button class="filter-pill">Print</button>
+            <button class="filter-pill">Electronic</button>
+
+            <button class="btn-primary" onclick="goToOpacSearch()">
+                Search
+            </button>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $activeBorrowsCount; ?></div>
+            <div class="stat-label">Books Borrowed</div>
+            <div class="stat-change">active</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $reservedItemsCount; ?></div>
+            <div class="stat-label">Reservations</div>
+            <div class="stat-change pending">pending</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value"><?php echo count($eresources); ?></div>
+            <div class="stat-label">E-Resources</div>
+            <div class="stat-change">digital</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value"><?php echo $overdueItemsCount; ?></div>
+            <div class="stat-label">Overdue Items</div>
+            <div class="stat-change danger">due</div>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <div class="section-title">Browse by Category</div>
+    </div>
+
+    <div class="categories-row">
+        <span class="cat-chip" onclick="goToCategory('Programming')">Programming</span>
+        <span class="cat-chip" onclick="goToCategory('Database Management')">Database Management</span>
+        <span class="cat-chip" onclick="goToCategory('Computer Networks')">Computer Networks</span>
+        <span class="cat-chip" onclick="goToCategory('Software Engineering')">Software Engineering</span>
+        <span class="cat-chip" onclick="goToCategory('Operating Systems')">Operating Systems</span>
+    </div>
+
+    <div class="section-header">
+        <div class="section-title">New Arrivals</div>
+        <button class="section-link" onclick="showPanel('p-opac', document.querySelector('[onclick*=p-opac]'))">View all →</button>
+    </div>
+
+    <div class="books-grid">
+        <?php if(!empty($materials)){ ?>
+            <?php foreach(array_slice($materials, 0, 6) as $m){ ?>
+                <div class="book-card">
+                    <div class="book-cover">
+                        <div class="book-cover-inner">
+                            <?= htmlspecialchars($m["title"]) ?>
+                        </div>
+                        <span class="book-type-badge">
+                            <?= htmlspecialchars($m["material_type"]) ?>
+                        </span>
+                    </div>
+
+                    <div class="book-info">
+                        <div class="book-title"><?= htmlspecialchars($m["title"]) ?></div>
+                        <div class="book-author"><?= htmlspecialchars($m["author"]) ?></div>
+
+                        <div class="book-footer">
+                            <div class="avail-indicator">
+                                <?= htmlspecialchars($m["available_copies"]) ?> available
+                            </div>
+
+                            <button class="book-action" onclick="showPanel('p-opac', document.querySelector('[onclick*=p-opac]'))">
+                                →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+        <?php } ?>
+    </div>
+
+    <div class="ornament-divider">
+        <div class="ornament-line"></div>
+        <div class="ornament-text">My Library Activity</div>
+        <div class="ornament-line"></div>
+    </div>
+
+    <div class="two-col">
+
+        <div class="table-card">
+            <div class="table-head">
+                <div class="table-head-title">Borrowed Items</div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <?php if(!empty($myLoans)){ ?>
+                        <?php foreach(array_slice($myLoans, 0, 4) as $loan){ ?>
+                            <tr>
+                                <td><?= htmlspecialchars($loan["title"]) ?></td>
+                                <td><?= htmlspecialchars($loan["due_date"]) ?></td>
+                                <td>
+                                    <?php if($loan["due_date"] < date("Y-m-d")){ ?>
+                                        <span class="status-pill pill-overdue">Overdue</span>
+                                    <?php } else { ?>
+                                        <span class="status-pill pill-active">Active</span>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    <?php } else { ?>
+                        <tr>
+                            <td colspan="3">No borrowed items</td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="activity-card">
+            <div class="activity-head">
+                <div class="activity-head-title">Recent Activity</div>
+            </div>
+
+            <div class="activity-list">
+                <?php if(!empty($myReservations)){ ?>
+                    <?php foreach(array_slice($myReservations, 0, 4) as $reserve){ ?>
+                        <div class="activity-item">
+                            <div class="act-body">
+                                <div class="act-text">
+                                    Reserved <strong><?= htmlspecialchars($reserve["title"]) ?></strong>
+                                </div>
+                                <div class="act-time">
+                                    <?= htmlspecialchars($reserve["reserved_at"]) ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                <?php } else { ?>
+                    <div class="activity-item">
+                        <div class="act-body">
+                            <div class="act-text">No recent reservations yet.</div>
+                            <div class="act-time">Start browsing OPAC materials.</div>
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</section>
 
         <section id="p-opac" class="panel">
             <div class="sec-head">
@@ -448,15 +617,50 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                 </div>
             </section>
 
-        <section id="p-eres" class="panel">
-            <div class="sec-head">
-                <div>
-                    <h3>E-Resources</h3>
-                    <p>Digital journals, e-books, and academic databases</p>
+            <section id="p-eres" class="panel">
+                <div class="sec-head">
+                    <div>
+                        <h3>E-Resources</h3>
+                        <p>Digital journals, e-books, and academic databases</p>
+                    </div>
                 </div>
-            </div>
-            <div class="table-card" id="eres-table"></div>
-        </section>
+
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Resource Title</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Access</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <?php if(!empty($eresources)){ ?>
+                                <?php foreach($eresources as $e){ ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($e["title"]) ?></td>
+                                        <td><?= htmlspecialchars($e["resource_type"]) ?></td>
+                                        <td><?= htmlspecialchars($e["description"]) ?></td>
+                                        <td>
+                                            <a href="<?= htmlspecialchars($e["resource_link"]) ?>" target="_blank">
+                                                <button class="btn-sm">
+                                                    <?= htmlspecialchars($e["access_label"]) ?>
+                                                </button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <tr>
+                                    <td colspan="4">No e-resources found</td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
         <section id="p-reserves" class="panel">
             <div class="sec-head">
@@ -676,8 +880,13 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                         </div>
                     </div>
 
-                    <button class="btn-gold" style="width: auto; padding: 11px 28px; margin-top: 8px;" onclick="saveProfile()">
+                    <button type="button"
+                            class="btn-gold"
+                            style="width: auto; padding: 11px 28px; margin-top: 8px;"
+                            onclick="updateProfileFunc()">
+
                         Save Changes
+
                     </button>
                 </div>
 
@@ -765,11 +974,70 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
 <script>
     var isGuest = <?php echo $isGuest ? "true" : "false"; ?>;
-            <?php echo json_encode($first_name); ?>,
-            <?php echo json_encode($last_name); ?>
+    var firstName = <?php echo json_encode($first_name); ?>;
+    var lastName = <?php echo json_encode($last_name); ?>;
 </script>
 
 <script src="../scripts/service.js"></script>
+
+<script>
+function goToOpacSearch() {
+    let searchValue = document.querySelector('.qs-input-wrap input').value;
+
+    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
+
+    setTimeout(function() {
+        document.getElementById('opac-q').value = searchValue;
+        renderOpac();
+    }, 100);
+}
+
+function goToCategory(category) {
+    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
+
+    setTimeout(function() {
+        document.getElementById('opac-cat').value = category;
+        renderOpac();
+    }, 100);
+}
+
+
+</script>
+
+<script>
+function goToOpacSearch() {
+    let searchValue = document.getElementById("overview-search").value;
+
+    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
+
+    document.getElementById("opac-q").value = searchValue;
+    renderOpac();
+}
+
+function topbarSearch(event) {
+    if (event.key === "Enter") {
+        let searchValue = event.target.value;
+
+        showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
+
+        document.getElementById("opac-q").value = searchValue;
+        renderOpac();
+    }
+}
+
+</script>
+
+<script>
+
+function overviewEnterSearch(event) {
+
+    if(event.key === "Enter") {
+
+        goToOpacSearch();
+    }
+}
+
+</script>
 
 </body>
 </html>

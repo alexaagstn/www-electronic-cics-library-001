@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<body class="auth-page"></body>
+
 <div id="page-register" class="screen page active">
 
     <div class="auth-left">

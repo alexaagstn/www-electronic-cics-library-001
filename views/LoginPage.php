@@ -106,13 +106,15 @@ session_start();
             </div>
         </div>
 
-        <a class="forgot-link fade-up-2"
-           onclick="showForgotNotice()"
-           role="button"
-           tabindex="0"
-           onkeydown="if(event.key==='Enter')showForgotNotice()">
-            Forgot password?
-        </a>
+            <a class="forgot-link fade-up-2"
+            onclick="openForgotModal()"
+            role="button"
+            tabindex="0"
+            onkeydown="if(event.key==='Enter')openForgotModal()">
+
+                Forgot password?
+
+            </a>
 
         <button class="btn-gold fade-up-3" type="button" onclick="doLogin()">
             Sign In to E-Library
@@ -131,7 +133,33 @@ session_start();
     </div>
 </div>
 
+<body class="auth-page">
 <script src="../scripts/service.js"></script>
+
+<div class="forgot-modal" id="forgotModal">
+
+    <div class="forgot-box">
+
+        <button class="forgot-close" onclick="closeForgotModal()">×</button>
+
+        <h3>Forgot Password</h3>
+
+        <p>
+            Enter your registered UST email address. If the account exists,
+            password reset instructions will be sent.
+        </p>
+
+        <input type="email"
+               id="forgot-email"
+               placeholder="example@ust.edu.ph">
+
+        <button class="forgot-send" onclick="sendResetFunc()">
+            Send Reset Instructions
+        </button>
+
+    </div>
+
+</div>
 
 </body>
 </html>

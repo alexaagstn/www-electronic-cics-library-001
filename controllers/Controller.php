@@ -13,4 +13,15 @@ else if(isset($_POST["ustID"], $_POST["firstName"], $_POST["lastName"], $_POST["
     exit;
 }
 
+if(isset($_POST["updateProfile"])) {
+    $usermanagement->updateProfileFunc(
+        $_SESSION["user_id"],
+        $_POST["firstName"],
+        $_POST["lastName"],
+        $_POST["email"],
+        $_POST["password"]
+    );
+    exit;
+}
+
 ?>

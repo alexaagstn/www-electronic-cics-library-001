@@ -326,149 +326,59 @@ $sundayPercent = ($sundayUsage / $maxUsage) * 100;
                     </div>
                 </div>
 
-                <div class="overview-grid">
-                    <div>
-                        <div class="sec-head">
-                            <div>
-                                <h3>Collection Breakdown</h3>
-                                <p>Overview of library collection categories.</p>
-                            </div>
-                        </div>
-
-                        <div class="quick-stats">
-                            <div class="qs-card">
-                                <div class="qs-title">Collection Breakdown</div>
-
-                                <div class="progress-item">
-                                    <div class="prog-head">
-                                        <span>Print Books</span>
-                                        <span><?php echo $printBooksCount; ?></span>
-                                    </div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width: <?php echo $printBooksPercent; ?>%; background: var(--gold);"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress-item">
-                                    <div class="prog-head">
-                                        <span>Electronic</span>
-                                        <span><?php echo $electronicCount; ?></span>
-                                    </div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width: <?php echo $electronicPercent; ?>%; background: var(--info);"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress-item">
-                                    <div class="prog-head">
-                                        <span>Journals</span>
-                                        <span><?php echo $journalsCount; ?></span>
-                                    </div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width: <?php echo $journalsPercent; ?>%; background: var(--success);"></div>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="overview-grid">
+                <div>
+                    <div class="sec-head">
+                        <div>
+                            <h3>Collection Breakdown</h3>
+                            <p>Overview of library collection categories.</p>
                         </div>
                     </div>
 
-                    <div>
-                        <div class="sec-head">
-                            <div>
-                                <h3>User Breakdown</h3>
-                                <p>Summary of registered users by role.</p>
-                            </div>
-                        </div>
-
-                        <div class="quick-stats">
-                            <div class="qs-card">
-                                <div class="qs-title">User Breakdown</div>
-
-                                <div class="progress-item">
-                                    <div class="prog-head">
-                                        <span>Students</span>
-                                        <span><?php echo $studentCount; ?></span>
-                                    </div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width: <?php echo $totalUserCount > 0 ? ($studentCount / $totalUserCount) * 100 : 0; ?>%; background: var(--gold);"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress-item">
-                                    <div class="prog-head">
-                                        <span>Faculty</span>
-                                        <span><?php echo $facultyCount; ?></span>
-                                    </div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width: <?php echo $totalUserCount > 0 ? ($facultyCount / $totalUserCount) * 100 : 0; ?>%; background: var(--info);"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress-item">
-                                    <div class="prog-head">
-                                        <span>Admins</span>
-                                        <span><?php echo $adminCount; ?></span>
-                                    </div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width: <?php echo $totalUserCount > 0 ? ($adminCount / $totalUserCount) * 100 : 0; ?>%; background: var(--success);"></div>
-                                    </div>
-                                </div>
+                    <div class="quick-stats">
+                        <div class="qs-card chart-card-sm">
+                            <div class="qs-title">Collection Breakdown</div>
+                            <div class="chart-holder">
+                                <canvas id="collectionChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="sec-head" style="margin-top:35px;">
-                    <div>
-                        <h3>Book Usage Trends</h3>
-                        <p>Weekly activity based on users who accessed or used library materials.</p>
+
+                <div>
+                    <div class="sec-head">
+                        <div>
+                            <h3>User Breakdown</h3>
+                            <p>Summary of registered users by role.</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="quick-stats">
-                    <div class="qs-card">
-                        <div class="qs-title">Monday - Sunday Usage Overview</div>
-
-                        <div class="ust-chart-box">
-                            <div class="ust-chart-bg"></div>
-
-                            <div class="ust-chart-item" title="<?php echo $mondayUsage; ?> usage">
-                                <div class="ust-chart-bar gold" style="height:<?php echo $mondayPercent; ?>%;"></div>
-                                <span>Monday</span>
-                            </div>
-
-                            <div class="ust-chart-item" title="<?php echo $tuesdayUsage; ?> usage">
-                                <div class="ust-chart-bar blue" style="height:<?php echo $tuesdayPercent; ?>%;"></div>
-                                <span>Tuesday</span>
-                            </div>
-
-                            <div class="ust-chart-item" title="<?php echo $wednesdayUsage; ?> usage">
-                                <div class="ust-chart-bar green" style="height:<?php echo $wednesdayPercent; ?>%;"></div>
-                                <span>Wednesday</span>
-                            </div>
-
-                            <div class="ust-chart-item" title="<?php echo $thursdayUsage; ?> usage">
-                                <div class="ust-chart-bar gold" style="height:<?php echo $thursdayPercent; ?>%;"></div>
-                                <span>Thursday</span>
-                            </div>
-
-                            <div class="ust-chart-item" title="<?php echo $fridayUsage; ?> usage">
-                                <div class="ust-chart-bar blue" style="height:<?php echo $fridayPercent; ?>%;"></div>
-                                <span>Friday</span>
-                            </div>
-
-                            <div class="ust-chart-item" title="<?php echo $saturdayUsage; ?> usage">
-                                <div class="ust-chart-bar green" style="height:<?php echo $saturdayPercent; ?>%;"></div>
-                                <span>Saturday</span>
-                            </div>
-
-                            <div class="ust-chart-item" title="<?php echo $sundayUsage; ?> usage">
-                                <div class="ust-chart-bar gray" style="height:<?php echo $sundayPercent; ?>%;"></div>
-                                <span>Sunday</span>
+                    <div class="quick-stats">
+                        <div class="qs-card chart-card-sm">
+                            <div class="qs-title">User Breakdown</div>
+                                    <div class="chart-holder">
+                                <canvas id="userChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
+
+            </div>
+
+            <div class="sec-head" style="margin-top:35px;">
+                <div>
+                    <h3>Book Usage Trends</h3>
+                    <p>Weekly activity based on users who accessed or used library materials.</p>
+                </div>
+            </div>
+
+            <div class="quick-stats">
+                <div class="qs-card chart-card-wide">
+                    <div class="qs-title">Monday - Sunday Usage Overview</div>
+                                    <div class="chart-holder">
+                    <canvas id="usageChart"></canvas>
+                </div>
+            </div>
             </section>
 
             <section id="p-users" class="panel">
@@ -653,6 +563,256 @@ $sundayPercent = ($sundayUsage / $maxUsage) * 100;
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="../scripts/service.js"></script>
 
-    
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const collectionData = {
+
+    labels: [
+        'Print Books',
+        'Electronic',
+        'Journals'
+    ],
+
+    datasets: [{
+
+        label: 'Collection Breakdown',
+
+        data: [
+
+            <?php echo $printBooksCount; ?>,
+            <?php echo $electronicCount; ?>,
+            <?php echo $journalsCount; ?>
+
+        ],
+
+        backgroundColor: [
+
+            '#c9a34d',
+            '#3b82c4',
+            '#39b8a5'
+
+        ],
+
+        borderWidth: 0,
+        hoverOffset: 8
+
+    }]
+};
+
+new Chart(document.getElementById('collectionChart'), {
+
+    type: 'doughnut',
+
+    data: collectionData,
+
+    options: {
+
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+
+            legend: {
+
+                position: 'right',
+
+                labels: {
+
+                    color: '#f0ead6',
+                    boxWidth: 14,
+                    padding: 12,
+
+                    font: {
+                        family: 'Sora',
+                        size: 11,
+                        weight: '500'
+                    }
+
+                }
+            }
+        },
+
+        cutout: '65%'
+    }
+});
+
+const userData = {
+    labels: [
+        'Students',
+        'Faculty',
+        'Admin'
+    ],
+
+    datasets: [{
+        label: 'User Breakdown',
+        data: [
+            <?php echo $studentCount; ?>,
+            <?php echo $facultyCount; ?>,
+            <?php echo $adminCount; ?>
+
+        ],
+        backgroundColor: [
+            'rgba(201, 163, 77, 0.75)',
+            'rgba(59, 130, 196, 0.75)',
+            'rgba(57, 184, 165, 0.75)'
+
+        ],
+        borderColor: [
+            '#c9a34d',
+            '#3b82c4',
+            '#39b8a5'
+
+        ],
+        borderWidth: 1,
+        borderRadius: 8
+
+    }]
+};
+
+new Chart(document.getElementById('userChart'), {
+    type: 'bar',
+    data: userData,
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+
+        scales: {
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    color: '#b8b1a1',
+                    font: {
+                        family: 'Sora',
+                        size: 10
+                    }
+                },
+                grid: {
+                    color: 'rgba(255,255,255,0.05)'
+                }
+
+            },
+            y: {
+                ticks: {
+                    color: '#f0ead6',
+                    font: {
+                        family: 'Sora',
+                        size: 10
+                    }
+
+                },
+                grid: {
+                    display: false
+                }
+
+            }
+        }
+    }
+});
+
+const usageData = {
+    labels: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+    ],
+    datasets: [{
+        label: 'Book Usage Trends',
+        data: [
+            <?php echo $mondayUsage; ?>,
+            <?php echo $tuesdayUsage; ?>,
+            <?php echo $wednesdayUsage; ?>,
+            <?php echo $thursdayUsage; ?>,
+            <?php echo $fridayUsage; ?>,
+            <?php echo $saturdayUsage; ?>,
+            <?php echo $sundayUsage; ?>
+
+        ],
+
+        backgroundColor: [
+            'rgba(201, 163, 77, 0.75)',
+            'rgba(180, 120, 55, 0.75)',
+            'rgba(57, 184, 165, 0.75)',
+            'rgba(59, 130, 196, 0.75)',
+            'rgba(120, 98, 220, 0.75)',
+            'rgba(82, 190, 110, 0.75)',
+            'rgba(120, 120, 120, 0.75)'
+
+        ],
+        borderColor: [
+            '#c9a34d',
+            '#b47837',
+            '#39b8a5',
+            '#3b82c4',
+            '#7862dc',
+            '#52be6e',
+            '#787878'
+
+        ],
+        borderWidth: 1,
+        borderRadius: 10
+
+    }]
+};
+
+new Chart(document.getElementById('usageChart'), {
+    type: 'bar',
+    data: usageData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: '#b8b1a1',
+                    font: {
+                        family: 'Sora',
+                        size: 10
+                    }
+
+                },
+                grid: {
+                    color: 'rgba(255,255,255,0.05)'
+                }
+
+            },
+            x: {
+                ticks: {
+                    color: '#f0ead6',
+                    font: {
+                        family: 'Sora',
+                        size: 10
+                    }
+
+                },
+                grid: {
+                    display: false
+                }
+
+            }
+        }
+    }
+});
+
+</script>
+
 </body>
 </html>

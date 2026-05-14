@@ -266,7 +266,15 @@ function doRegister() {
 
     if (!/^\d{10}$/.test(ustID)) {
         document.getElementById("reg-alert").classList.add("show");
-        document.getElementById("reg-alert").innerHTML = "UST ID must contain exactly 10 digits.";
+        document.getElementById("reg-alert").innerHTML = "Please enter a valid 10-digit UST ID.";
+        return;
+    }
+
+    let yearPrefix = parseInt(ustID.substring(0,4));
+
+    if(yearPrefix > 2025){
+        document.getElementById("reg-alert").classList.add("show");
+        document.getElementById("reg-alert").innerHTML = "Please enter a valid UST ID number.";
         return;
     }
        
@@ -282,10 +290,30 @@ function doRegister() {
         return;
     }
 
-    if (!email.toLowerCase().endsWith("@ust.edu.ph")) {
-        document.getElementById("reg-alert").classList.add("show");
-        document.getElementById("reg-alert").innerHTML = "Please use your UST email address only.";
-        return;
+    if (selectedRole === "student") {
+
+        if (!email.toLowerCase().endsWith(".cics@ust.edu.ph")) {
+
+            document.getElementById("reg-alert").classList.add("show");
+
+            document.getElementById("reg-alert").innerHTML =
+            "Please use your official CICS email address.";
+
+            return;
+        }
+    }
+
+    else if (selectedRole === "faculty") {
+
+        if (!email.toLowerCase().endsWith("@ust.edu.ph")) {
+
+            document.getElementById("reg-alert").classList.add("show");
+
+            document.getElementById("reg-alert").innerHTML =
+            "Please use your official UST email address.";
+
+            return;
+        }
     }
 
     $.ajax({
@@ -338,3 +366,92 @@ document.addEventListener("DOMContentLoaded", function () {
         selectRole("student");
     }
 });
+
+function renderOpac() {
+
+    let search =
+    document.getElementById("opac-q").value.toLowerCase();
+
+    let category =
+    document.getElementById("opac-cat").value.toLowerCase();
+
+    let rows =
+    document.querySelectorAll("#opac-grid tbody tr");
+
+    rows.forEach(function(row) {
+
+        let text =
+        row.innerText.toLowerCase();
+
+        let categoryCell =
+        row.children[3].innerText.toLowerCase();
+
+        let matchesSearch =
+        text.includes(search);
+
+        let matchesCategory =
+        category === "" ||
+        categoryCell.includes(category);
+
+        if(matchesSearch && matchesCategory){
+            row.style.display = "";
+        }
+        else{
+            row.style.display = "none";
+        }
+    });
+}
+
+function updateProfileFunc() {
+    let firstName = document.getElementById("edit-fname").value;
+    let lastName = document.getElementById("edit-lname").value;
+    let email = document.getElementById("edit-email").value;
+    let password = document.getElementById("edit-pass").value;
+
+    $.ajax({
+        url: "../controllers/Controller.php",
+        type: "POST",
+        data: {
+            updateProfile: true,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password
+        },
+        success: function(response) {
+            if(response.trim() == "1") {
+                alert("Profile updated successfully.");
+                location.reload();
+            }
+            else {
+                alert(response);
+            }
+        }
+    });
+}
+
+function openForgotModal() {
+    document.getElementById("forgotModal").style.display = "flex";
+}
+
+function closeForgotModal() {
+    document.getElementById("forgotModal").style.display = "none";
+}
+
+function sendResetFunc() {
+    let email = document.getElementById("forgot-email").value.trim();
+
+    if(email === "") {
+        alert("Please enter your registered UST email address.");
+        return;
+    }
+
+    if(!email.toLowerCase().endsWith("@ust.edu.ph")) {
+        alert("Please use your official UST email address.");
+        return;
+    }
+
+    alert("If the email is registered, password reset instructions will be sent shortly.");
+
+    closeForgotModal();
+}
