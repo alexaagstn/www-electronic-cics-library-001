@@ -781,7 +781,7 @@ body {
     padding: 0 32px;
     height: 60px;
     border-bottom: 1px solid var(--border);
-    background: rgba(13, 14, 20, 0.8);
+    background: rgba(131, 89, 38, 0.8);
     backdrop-filter: blur(8px);
     position: sticky;
     top: 0;
@@ -806,8 +806,8 @@ body {
     padding: 8px 14px;
     border-radius: 6px;
     border: 1px solid var(--border);
-    background: rgba(201, 151, 58, 0.04);
-    color: var(--text);
+    background: rgb(255, 255, 255);
+    color: #000000;
     font-family: 'Sora', sans-serif;
     font-size: 13px;
     width: 220px;
@@ -833,7 +833,7 @@ body {
     height: 36px;
     border-radius: 8px;
     cursor: pointer;
-    color: var(--muted);
+    color: #ffffffa9;
     border: 1px solid var(--border);
     background: none;
     transition: color 0.2s, border-color 0.2s;
@@ -1131,11 +1131,11 @@ body {
 .table-card td {
     padding: 12px 16px;
     border-bottom:
-    1px solid rgba(255,255,255,0.04);
+    1px solid rgba(255, 255, 255, 0.04);
     background:
-    #1a1206cd;
+    #ffe2a731;
     color:
-    rgba(255,255,255,0.84);
+    rgba(0, 0, 0, 0.683);
     vertical-align: middle;
 }
 
@@ -1161,13 +1161,12 @@ body {
     flex-wrap: wrap;
 }
 
-.db-toolbar input,
-.db-toolbar select {
+.db-toolbar input, .db-toolbar select {
     padding: 9px 14px;
     border-radius: 6px;
     border: 1px solid var(--border);
-    background:  rgba(65, 50, 33, 0.866);
-    color: #ffffff;
+    background:  rgba(235, 224, 213, 0.866);
+    color: #383636;
     font-family: 'Sora', sans-serif;
     font-size: 13px;
     transition: border-color 0.2s;
@@ -1192,7 +1191,7 @@ body {
     border-radius: 6px;
     border: 1px solid var(--border);
     background: none;
-    color: var(--text);
+    color: #0000008f;
     font-family: 'Sora', sans-serif;
     font-size: 12px;
     font-weight: 500;

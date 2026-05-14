@@ -315,9 +315,9 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                     onkeydown="overviewEnterSearch(event)">
             </div>
 
-            <button class="filter-pill active">All</button>
-            <button class="filter-pill">Print</button>
-            <button class="filter-pill">Electronic</button>
+            <button class="filter-pill active" onclick="goToType('', this)">All</button>
+            <button class="filter-pill" onclick="goToType('print', this)">Print</button>
+            <button class="filter-pill" onclick="goToType('electronic', this)">Electronic</button>
 
             <button class="btn-primary" onclick="goToOpacSearch()">
                 Search
@@ -356,7 +356,7 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
     </div>
 
     <div class="categories-row">
-        <span class="cat-chip" onclick="goToCategory('Programming')">Programming</span>
+        <span class="cat-chip" onclick="goToCategory('Introduction to Computing')">Introduction to Computing</span>
         <span class="cat-chip" onclick="goToCategory('Database Management')">Database Management</span>
         <span class="cat-chip" onclick="goToCategory('Computer Networks')">Computer Networks</span>
         <span class="cat-chip" onclick="goToCategory('Software Engineering')">Software Engineering</span>
@@ -495,7 +495,7 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                     <option value="">All Types</option>
                     <option value="print">Print</option>
                     <option value="electronic">Electronic</option>
-                    <option value="journal">Journal</option>
+                    <option value="journals">Journals</option>
                 </select>
                 <select id="opac-cat" onchange="renderOpac()" aria-label="Filter by category">
                     <option value="">All Categories</option>
@@ -525,7 +525,7 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                     <tbody>
                         <?php if(!empty($materials)){ ?>
                             <?php foreach($materials as $m){ ?>
-                                <tr>
+                                <tr data-type="<?= strtolower(htmlspecialchars($m["material_type"])) ?>">
                                     <td><?= htmlspecialchars($m["title"]) ?></td>
                                     <td><?= htmlspecialchars($m["author"]) ?></td>
                                     <td><?= htmlspecialchars($m["material_type"]) ?></td>
@@ -786,7 +786,7 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                     <option value="">All Types</option>
                     <option value="print">Print</option>
                     <option value="electronic">Electronic</option>
-                    <option value="journal">Journal</option>
+                    <option value="journals">Journals</option>
                 </select>
             </div>
 
@@ -935,17 +935,20 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
             </div>
         </div>
 
-        <div class="field-row">
-            <div class="field-group">
+            <div class="field-row">
+                <div class="field-group">
                 <label for="m-type">Type</label>
                 <div class="field-wrap no-icon">
                     <select id="m-type">
+                        <option value="">All Types</option>
                         <option value="print">Print</option>
                         <option value="electronic">Electronic</option>
-                        <option value="journal">Journal</option>
+                        <option value="journals">Journals</option>
                     </select>
+
                 </div>
             </div>
+        </div>
             <div class="field-group">
                 <label for="m-cat">Category</label>
                 <div class="field-wrap no-icon"><input type="text" id="m-cat" placeholder="e.g. Computer Science" /></div>
@@ -982,30 +985,6 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
 <script>
 function goToOpacSearch() {
-    let searchValue = document.querySelector('.qs-input-wrap input').value;
-
-    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
-
-    setTimeout(function() {
-        document.getElementById('opac-q').value = searchValue;
-        renderOpac();
-    }, 100);
-}
-
-function goToCategory(category) {
-    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
-
-    setTimeout(function() {
-        document.getElementById('opac-cat').value = category;
-        renderOpac();
-    }, 100);
-}
-
-
-</script>
-
-<script>
-function goToOpacSearch() {
     let searchValue = document.getElementById("overview-search").value;
 
     showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
@@ -1015,28 +994,65 @@ function goToOpacSearch() {
 }
 
 function topbarSearch(event) {
-    if (event.key === "Enter") {
-        let searchValue = event.target.value;
-
+    if(event.key === "Enter") {
         showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
 
-        document.getElementById("opac-q").value = searchValue;
+        document.getElementById("opac-q").value = event.target.value;
         renderOpac();
     }
 }
 
-</script>
-
-<script>
-
 function overviewEnterSearch(event) {
-
     if(event.key === "Enter") {
-
         goToOpacSearch();
     }
 }
 
+function goToCategory(category) {
+    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
+
+    document.getElementById("opac-cat").value = category;
+    renderOpac();
+}
+
+function renderOpac() {
+    let search = document.getElementById("opac-q").value.toLowerCase();
+    let selectedType = document.getElementById("opac-type").value.toLowerCase();
+    let selectedCategory = document.getElementById("opac-cat").value.toLowerCase();
+
+    let rows = document.querySelectorAll("#opac-grid tbody tr");
+
+    rows.forEach(function(row) {
+        let text = row.innerText.toLowerCase();
+
+        let rowType = row.getAttribute("data-type");
+        rowType = rowType ? rowType.toLowerCase() : "";
+
+        let rowCategory = row.children[3]
+            ? row.children[3].innerText.toLowerCase()
+            : "";
+
+        let matchesSearch = text.includes(search);
+        let matchesType = selectedType === "" || rowType === selectedType;
+        let matchesCategory = selectedCategory === "" || rowCategory.includes(selectedCategory);
+
+        row.style.display = matchesSearch && matchesType && matchesCategory ? "" : "none";
+    });
+}
+
+function goToType(type, btn) {
+    document.querySelectorAll(".filter-pill").forEach(function(pill) {
+        pill.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+
+    showPanel('p-opac', document.querySelector('.nav-btn[onclick*="p-opac"]'));
+
+    document.getElementById("opac-type").value = type;
+
+    renderOpac();
+}
 </script>
 
 </body>
