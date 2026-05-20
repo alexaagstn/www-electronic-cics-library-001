@@ -61,6 +61,28 @@ if(isset($_POST["reserveBtn"])){
     exit;
 }
 
+if(isset($_POST["downloadBtn"])){
+    $materialID = $_POST["materialID"];
+    $usermanagement->downloadMaterialFunc($_SESSION["user_id"], $materialID);
+
+    header("Location: DashboardPage.php");
+    exit;
+}
+
+date_default_timezone_set("Asia/Manila");
+
+$currentHour = (int) date("H");
+
+if ($currentHour >= 5 && $currentHour < 12) {
+    $greeting = "Good Morning";
+} elseif ($currentHour >= 12 && $currentHour < 18) {
+    $greeting = "Good Afternoon";
+} else {
+    $greeting = "Good Evening";
+}
+
+$displayName = !empty($first_name) ? $first_name : "User";
+
 }
 
 $activeBorrows = $usermanagement->activeBorrowsFunc();
@@ -170,6 +192,15 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                 </span>
                 Reservations
             </button>
+            
+            <button class="nav-btn" onclick="showRestrictedPanel('p-messages', this)">
+                <span class="n-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+                    </svg>
+                </span>
+                Messages
+            </button>
 
             <div class="sb-section" id="sb-admin-sect" style="display: none;" aria-hidden="true">Admin</div>
 
@@ -255,7 +286,8 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
     <div class="announcement" id="ann">
         <div class="ann-text">
-            <strong>Library Hours Update:</strong> Welcome to UST E-Library. Browse materials, manage loans, and access digital resources.
+            <strong><?= $greeting ?>, <?= htmlspecialchars($displayName) ?>!</strong>
+            Welcome to UST E-Library. Browse materials, manage loans, and access digital resources.
         </div>
         <button class="ann-close" onclick="document.getElementById('ann').style.display='none'">×</button>
     </div>
@@ -532,17 +564,37 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                                     <td><?= htmlspecialchars($m["category"]) ?></td>
                                     <td><?= htmlspecialchars($m["available_copies"]) ?></td>
                                     <td>
-                                        <?php if($m["available_copies"] > 0){ ?>
-                                            <form method="POST" style="display:inline;">
-                                                <input type="hidden" name="materialID" value="<?= $m["material_id"] ?>">
-                                                <button type="submit" name="borrowBtn" class="btn-sm">Borrow</button>
-                                            </form>
-                                        <?php } ?>
+                                        <div class="opac-actions">
 
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="materialID" value="<?= $m["material_id"] ?>">
-                                            <button type="submit" name="reserveBtn" class="btn-sm">Reserve</button>
-                                        </form>
+                                            <form method="POST" class="action-form">
+                                                <input type="hidden" name="materialID" value="<?= $m["material_id"] ?>">
+
+                                                <?php if ($m["available_copies"] > 0): ?>
+                                                    <button type="submit" name="borrowBtn" class="btn-sm btn-borrow">
+                                                        Borrow
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button type="button" class="btn-sm btn-borrow btn-disabled" disabled>
+                                                        Borrow
+                                                    </button>
+                                                <?php endif; ?>
+                                            </form>
+
+                                            <form method="POST" class="action-form">
+                                                <input type="hidden" name="materialID" value="<?= $m["material_id"] ?>">
+                                                <button type="submit" name="reserveBtn" class="btn-sm btn-reserve">
+                                                    Reserve
+                                                </button>
+                                            </form>
+
+                                            <form method="POST" class="action-form">
+                                                <input type="hidden" name="materialID" value="<?= $m["material_id"] ?>">
+                                                <button type="submit" name="downloadBtn" class="btn-sm btn-download">
+                                                    Download
+                                                </button>
+                                            </form>
+
+                                        </div>
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -793,17 +845,14 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
             <div class="table-card">
                 <table>
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Type</th>
-                            <th>Category</th>
-                            <th>ISBN</th>
-                            <th>Copies</th>
-                            <th>Available</th>
-                            <th>Actions</th>
-                        </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Material</th>
+                        <th>Category</th>
+                        <th>Copies</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
                     <tbody id="mats-tbody"></tbody>
                 </table>
@@ -811,6 +860,70 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
             <div class="table-meta" id="mats-count"></div>
         </section>
+        <section id="p-messages" class="panel">
+    <div class="sec-head">
+        <div>
+            <h3>Messages</h3>
+            <p>Chat with students or contact CICS E-Library support.</p>
+        </div>
+    </div>
+
+    <div class="messages-shell">
+
+        <div class="messages-tabs">
+            <button type="button" class="msg-tab active" onclick="switchMessageTab('student', this)">
+                Student Chat
+            </button>
+
+            <button type="button" class="msg-tab" onclick="switchMessageTab('support', this)">
+                Chat Support
+            </button>
+        </div>
+
+        <div class="msg-panel active" id="student-chat-panel">
+            <div class="msg-head">
+                <h4>Student Chat</h4>
+                <p>Discuss library resources, books, and study materials with other students.</p>
+            </div>
+
+            <div class="msg-box" id="studentMessages">
+                <div class="msg-bubble other">
+                    <strong>Student</strong>
+                    <span>Hello! You can ask other students about available resources here.</span>
+                </div>
+            </div>
+
+            <div class="msg-input-row">
+                <input type="text" id="studentChatInput"
+                       placeholder="Message other students..."
+                       onkeydown="sendMessageOnEnter(event, 'student')">
+                <button type="button" onclick="sendMessage('student')">Send</button>
+            </div>
+        </div>
+
+        <div class="msg-panel" id="support-chat-panel">
+            <div class="msg-head">
+                <h4>Chat Support</h4>
+                <p>Ask help about borrowing, reservations, accounts, or e-resource access.</p>
+            </div>
+
+            <div class="msg-box" id="supportMessages">
+                <div class="msg-bubble other">
+                    <strong>CICS E-Library Support</strong>
+                    <span>Hello! How can we help you today?</span>
+                </div>
+            </div>
+
+            <div class="msg-input-row">
+                <input type="text" id="supportChatInput"
+                       placeholder="Message support..."
+                       onkeydown="sendMessageOnEnter(event, 'support')">
+                <button type="button" onclick="sendMessage('support')">Send</button>
+            </div>
+        </div>
+
+    </div>
+</section>
 
         <section id="p-profile" class="panel">
             <div class="sec-head">
@@ -896,44 +1009,44 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
     </div>
 </div>
 
-<div class="modal-bg" id="del-modal" role="dialog" aria-modal="true" aria-labelledby="del-modal-title">
-    <div class="modal">
-        <button type="button" class="modal-close" onclick="closeModal('del-modal')" aria-label="Close">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-        </button>
-        <h3 id="del-modal-title">Delete User?</h3>
-        <p id="del-msg">This action cannot be undone. The user record will be permanently removed.</p>
-        <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('del-modal')">Cancel</button>
-            <button type="button" class="btn-danger-confirm" id="del-confirm-btn">Delete</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-bg" id="mat-modal" role="dialog" aria-modal="true" aria-labelledby="mat-modal-title">
-    <div class="modal" style="max-width: 560px;">
-        <button type="button" class="modal-close" onclick="closeModal('mat-modal')" aria-label="Close">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-        </button>
-        <h3 id="mat-modal-title">Add Material</h3>
-        <p>Fill in the details for the new library material.</p>
-
-        <div class="field-row">
-            <div class="field-group">
-                <label for="m-title">Title</label>
-                <div class="field-wrap no-icon"><input type="text" id="m-title" placeholder="Material title" /></div>
-            </div>
-            <div class="field-group">
-                <label for="m-author">Author</label>
-                <div class="field-wrap no-icon"><input type="text" id="m-author" placeholder="Author name" /></div>
+        <div class="modal-bg" id="del-modal" role="dialog" aria-modal="true" aria-labelledby="del-modal-title">
+            <div class="modal">
+                <button type="button" class="modal-close" onclick="closeModal('del-modal')" aria-label="Close">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <h3 id="del-modal-title">Delete User?</h3>
+                <p id="del-msg">This action cannot be undone. The user record will be permanently removed.</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('del-modal')">Cancel</button>
+                    <button type="button" class="btn-danger-confirm" id="del-confirm-btn">Delete</button>
+                </div>
             </div>
         </div>
+
+        <div class="modal-bg" id="mat-modal" role="dialog" aria-modal="true" aria-labelledby="mat-modal-title">
+            <div class="modal" style="max-width: 560px;">
+                <button type="button" class="modal-close" onclick="closeModal('mat-modal')" aria-label="Close">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <h3 id="mat-modal-title">Add Material</h3>
+                <p>Fill in the details for the new library material.</p>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label for="m-title">Title</label>
+                        <div class="field-wrap no-icon"><input type="text" id="m-title" placeholder="Material title" /></div>
+                    </div>
+                    <div class="field-group">
+                        <label for="m-author">Author</label>
+                        <div class="field-wrap no-icon"><input type="text" id="m-author" placeholder="Author name" /></div>
+                    </div>
+                </div>
 
             <div class="field-row">
                 <div class="field-group">
@@ -1052,6 +1165,73 @@ function goToType(type, btn) {
     document.getElementById("opac-type").value = type;
 
     renderOpac();
+}
+function switchMessageTab(type, button) {
+    document.querySelectorAll(".msg-tab").forEach(function(tab) {
+        tab.classList.remove("active");
+    });
+
+    document.querySelectorAll(".msg-panel").forEach(function(panel) {
+        panel.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    if (type === "student") {
+        document.getElementById("student-chat-panel").classList.add("active");
+    } else {
+        document.getElementById("support-chat-panel").classList.add("active");
+    }
+}
+
+function sendMessage(type) {
+    let input;
+    let messages;
+    let autoReply;
+
+    if (type === "student") {
+        input = document.getElementById("studentChatInput");
+        messages = document.getElementById("studentMessages");
+        autoReply = "Your message was sent to the student chat.";
+    } else {
+        input = document.getElementById("supportChatInput");
+        messages = document.getElementById("supportMessages");
+        autoReply = "Thank you for contacting support. A library staff member will respond soon.";
+    }
+
+    const text = input.value.trim();
+
+    if (text === "") {
+        return;
+    }
+
+    const myBubble = document.createElement("div");
+    myBubble.className = "msg-bubble me";
+    myBubble.innerHTML = "<strong>You</strong><span>" + text + "</span>";
+    messages.appendChild(myBubble);
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+
+    setTimeout(function() {
+        const replyBubble = document.createElement("div");
+        replyBubble.className = "msg-bubble other";
+
+        if (type === "student") {
+            replyBubble.innerHTML = "<strong>System</strong><span>" + autoReply + "</span>";
+        } else {
+            replyBubble.innerHTML = "<strong>CICS E-Library Support</strong><span>" + autoReply + "</span>";
+        }
+
+        messages.appendChild(replyBubble);
+        messages.scrollTop = messages.scrollHeight;
+    }, 500);
+}
+
+function sendMessageOnEnter(event, type) {
+    if (event.key === "Enter") {
+        sendMessage(type);
+    }
 }
 </script>
 

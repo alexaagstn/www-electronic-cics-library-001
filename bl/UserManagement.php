@@ -114,76 +114,239 @@ class UserManagement {
                 $response->bindParam(":course", $course);
                 $response->bindParam(":year", $year);
 
-                if($response->execute()) {
-
-                    $name = htmlspecialchars($firstName . " " . $lastName);
-                    $adminEmail = filter_var("cics.elibrary.ust@gmail.com", FILTER_VALIDATE_EMAIL);
-                    $message = htmlspecialchars("A new user has registered in the system.");
-
-                    if (!$adminEmail) {
-                        die("Invalid email");
-                    }
+                if ($response->execute()) {
 
                     date_default_timezone_set("Asia/Manila");
+
+                    $adminEmail = "cics.elibrary.ust@gmail.com";
                     $dateRegistered = date("F j, Y h:i A");
 
-                $body = "
-                <div style='background:#f4f6f8; padding:30px; font-family:Tahoma, Arial, sans-serif;'>
+                    $nameSafe = htmlspecialchars($firstName . " " . $lastName);
+                    $emailSafe = htmlspecialchars($email);
+                    $ustIDSafe = htmlspecialchars($ustID);
+                    $usernameSafe = htmlspecialchars($username);
+                    $roleSafe = htmlspecialchars($role);
+                    $courseSafe = htmlspecialchars($course);
+                    $yearSafe = htmlspecialchars($year);
 
-                    <div style='max-width:600px; margin:auto; background:#ffffff; border:1px solid #dcdcdc; border-bottom:4px solid #1a203b; border-radius:12px;'>
+                    // ADMIN ITETCH
+                    $adminBody = "
+                    <div style='margin:0; padding:0; background:#F8F5E8; font-family:-apple-system, BlinkMacSystemFont, &quot;SF Pro Text&quot;, &quot;SF Pro Display&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif; color:#1A1A1A;'>
 
-                        <!-- HEADER -->
-                        <div style='padding:20px; border-bottom:1px solid #1a203b;'>
-                            <h2 style='margin:0; font-size:20px; color:#333;'>UST CICS Electronic Library</h2>
-                            <p style='margin:4px 0 0; font-size:12px; color:#888;'>System Notification</p>
-                        </div>
+                        <div style='width:100%; padding:36px 0;'>
 
-                        <!-- BODY -->
-                        <div style='padding:20px;'>
+                            <div style='max-width:640px; margin:0 auto; background:#FFFFFF; border:1px solid rgba(0,0,0,0.10); border-radius:22px; overflow:hidden; box-shadow:0 18px 45px rgba(0,0,0,0.10);'>
 
-                            <h3 style='margin-top:0; font-size:16px; color:#333;'>New User Account Created</h3>
+                                <div style='background:#111111; padding:30px 34px; border-bottom:4px solid #D4AF37;'>
 
-                            <p style='font-size:13px; color:#444;'><b>Name:</b> $name</p>
-                            <p style='font-size:13px; color:#444;'><b>Email:</b> $email</p>
-                            <p style='font-size:13px; color:#444;'><b>UST ID:</b> $ustID</p>
-                            <p style='font-size:13px; color:#444;'><b>Username:</b> $username</p>
-                            <p style='font-size:13px; color:#444;'><b>Role:</b> $role</p>
-                            <p style='font-size:13px; color:#444;'><b>Course:</b> $course</p>
-                            <p style='font-size:13px; color:#444;'><b>Year:</b> $year</p>
+                                    <div style='display:inline-block; margin-bottom:14px; padding:6px 11px; border-radius:999px; background:rgba(212,175,55,0.14); color:#D4AF37; font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;'>
+                                        Admin Notification
+                                    </div>
+            
+                                    <h2 style='margin:0; font-family:-apple-system, BlinkMacSystemFont, &quot;SF Pro Display&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif; font-size:25px; line-height:1.18; color:#F8F5E8; font-weight:750; letter-spacing:-0.45px;'>
+                                        UST CICS Electronic Library
+                                    </h2>
 
-                            <p style='font-size:13px; color:#444; margin-top:10px;'>
-                                <b>Date Registered:</b> $dateRegistered
-                            </p>
+                                    <p style='margin:8px 0 0; font-size:13px; line-height:1.5; color:rgba(248,245,232,0.68); font-weight:400;'>
+                                        A new user account has been created in the system.
+                                    </p>
+                                </div>
 
-                            <br>
+                                <div style='padding:34px;'>
 
-                            <p style='font-size:12px; color:#777; line-height:1.5;'>
-                                A new user account has been successfully created in the system. 
-                                You may review the account details or monitor activity through the admin dashboard.
-                            </p>
+                                    <div style='display:inline-block; background:rgba(212,175,55,0.12); color:#9B7A14; border:1px solid rgba(212,175,55,0.28); border-radius:999px; padding:7px 13px; font-size:11px; font-weight:700; letter-spacing:0.9px; text-transform:uppercase; margin-bottom:18px;'>
+                                        New Registration
+                                    </div>
 
-                        </div>
+                                    <h3 style='margin:0 0 10px; font-family:-apple-system, BlinkMacSystemFont, &quot;SF Pro Display&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif; font-size:23px; line-height:1.22; color:#1A1A1A; font-weight:750; letter-spacing:-0.45px;'>
+                                        New User Account Created
+                                    </h3>
 
-                        <!-- FOOTER -->
-                        <div style='padding:12px; background:#fafafa; text-align:center; font-size:11px; color:#1a203b;'>
-                            CICS E-Library System
+                                    <p style='margin:0 0 26px; font-size:14px; line-height:1.65; color:#6B6B6B; font-weight:400;'>
+                                        A new user account has been successfully created in the system. You may review the account details below or monitor activity through the admin dashboard.
+                                    </p>
+
+                                    <div style='background:#FFFDF8; border:1px solid rgba(0,0,0,0.10); border-radius:18px; overflow:hidden;'>
+
+                                        <div style='background:#F0EBD8; padding:15px 20px; border-bottom:1px solid rgba(0,0,0,0.10);'>
+                                            <p style='margin:0; font-size:11px; color:#6B6B6B; letter-spacing:1.3px; text-transform:uppercase; font-weight:750;'>
+                                                Account Information
+                                            </p>
+                                        </div>
+
+                                        <table width='100%' cellpadding='0' cellspacing='0' style='border-collapse:collapse;'>
+                                            <tr>
+                                                <td style='padding:14px 20px; width:160px; font-size:13px; color:#6B6B6B; font-weight:650;'>Name</td>
+                                                <td style='padding:14px 20px; font-size:14px; color:#1A1A1A; font-weight:650;'>$nameSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Email</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px;'>
+                                                    <a href='mailto:$emailSafe' style='color:#9B7A14; text-decoration:none; font-weight:650;'>$emailSafe</a>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>UST ID</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px; color:#1A1A1A;'>$ustIDSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Username</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px; color:#1A1A1A;'>$usernameSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Role</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08);'>
+                                                    <span style='display:inline-block; background:rgba(15,122,53,0.12); color:#0F7A35; padding:6px 11px; border-radius:999px; font-size:12px; font-weight:750; text-transform:capitalize;'>
+                                                        $roleSafe
+                                                    </span>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Course</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px; color:#1A1A1A;'>$courseSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Year Level</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px; color:#1A1A1A;'>$yearSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Date Registered</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px; color:#1A1A1A;'>$dateRegistered</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div style='margin-top:24px; padding:17px 19px; background:#F8F5E8; border-left:4px solid #D4AF37; border-radius:14px;'>
+                                        <p style='margin:0; font-size:13px; color:#6B6B6B; line-height:1.65; font-weight:400;'>
+                                            This notification was automatically generated by the CICS E-Library System.
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div style='background:#2F2F2F; padding:18px 30px; text-align:center; border-top:4px solid #D4AF37;'>
+                                    <p style='margin:0; color:#F8F5E8; font-size:12px; font-weight:750;'>CICS E-Library System</p>
+                                    <p style='margin:5px 0 0; color:rgba(248,245,232,0.62); font-size:11px;'>University of Santo Tomas</p>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
+                    ";
 
-                </div>
-                ";
+                    // USER
+                    $userBody = "
+                    <div style='margin:0; padding:0; background:#F8F5E8; font-family:-apple-system, BlinkMacSystemFont, &quot;SF Pro Text&quot;, &quot;SF Pro Display&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif; color:#1A1A1A;'>
 
-                    $result = sendEmail(
-                        "cics.elibrary.ust@gmail.com",
+                        <div style='width:100%; padding:36px 0;'>
+
+                            <div style='max-width:640px; margin:0 auto; background:#FFFFFF; border:1px solid rgba(0,0,0,0.10); border-radius:22px; overflow:hidden; box-shadow:0 18px 45px rgba(0,0,0,0.10);'>
+
+                                <div style='background:#111111; padding:30px 34px; border-bottom:4px solid #D4AF37;'>
+
+                                    <div style='display:inline-block; margin-bottom:14px; padding:6px 11px; border-radius:999px; background:rgba(212,175,55,0.14); color:#D4AF37; font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;'>
+                                        Welcome Message
+                                    </div>
+
+                                    <h2 style='margin:0; font-family:-apple-system, BlinkMacSystemFont, &quot;SF Pro Display&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif; font-size:25px; line-height:1.18; color:#F8F5E8; font-weight:750; letter-spacing:-0.45px;'>
+                                        Welcome to UST CICS E-Library
+                                    </h2>
+
+                                    <p style='margin:8px 0 0; font-size:13px; line-height:1.5; color:rgba(248,245,232,0.68); font-weight:400;'>
+                                        Your account has been successfully created.
+                                    </p>
+                                </div>
+
+                                <div style='padding:34px;'>
+
+                                    <h3 style='margin:0 0 10px; font-family:-apple-system, BlinkMacSystemFont, &quot;SF Pro Display&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif; font-size:23px; line-height:1.22; color:#1A1A1A; font-weight:750; letter-spacing:-0.45px;'>
+                                        Hello, $nameSafe!
+                                    </h3>
+
+                                    <p style='margin:0 0 26px; font-size:14px; line-height:1.65; color:#6B6B6B; font-weight:400;'>
+                                        Your UST CICS E-Library account has been registered successfully. You may now sign in using your registered username or email address.
+                                    </p>
+
+                                    <div style='background:#FFFDF8; border:1px solid rgba(0,0,0,0.10); border-radius:18px; overflow:hidden;'>
+
+                                        <div style='background:#F0EBD8; padding:15px 20px; border-bottom:1px solid rgba(0,0,0,0.10);'>
+                                            <p style='margin:0; font-size:11px; color:#6B6B6B; letter-spacing:1.3px; text-transform:uppercase; font-weight:750;'>
+                                                Your Account Details
+                                            </p>
+                                        </div>
+
+                                        <table width='100%' cellpadding='0' cellspacing='0' style='border-collapse:collapse;'>
+                                            <tr>
+                                                <td style='padding:14px 20px; width:160px; font-size:13px; color:#6B6B6B; font-weight:650;'>Name</td>
+                                                <td style='padding:14px 20px; font-size:14px; color:#1A1A1A; font-weight:650;'>$nameSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Email</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px;'>$emailSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Username</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px;'>$usernameSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Course</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px;'>$courseSafe</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:#6B6B6B; font-weight:650;'>Year Level</td>
+                                                <td style='padding:14px 20px; border-top:1px solid rgba(0,0,0,0.08); font-size:14px;'>$yearSafe</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div style='margin-top:24px; padding:17px 19px; background:#F8F5E8; border-left:4px solid #D4AF37; border-radius:14px;'>
+                                        <p style='margin:0; font-size:13px; color:#6B6B6B; line-height:1.65; font-weight:400;'>
+                                            Please keep your login information secure. If you did not create this account, contact the CICS E-Library administrator immediately.
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div style='background:#2F2F2F; padding:18px 30px; text-align:center; border-top:4px solid #D4AF37;'>
+                                    <p style='margin:0; color:#F8F5E8; font-size:12px; font-weight:750;'>CICS E-Library System</p>
+                                    <p style='margin:5px 0 0; color:rgba(248,245,232,0.62); font-size:11px;'>University of Santo Tomas</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    ";
+
+                    $adminResult = sendEmail(
+                        $adminEmail,
                         "Admin",
                         "New Registration",
-                        $body
+                        $adminBody
                     );
 
-                    if ($result === true) {
+                    $userResult = sendEmail(
+                        $email,
+                        $firstName,
+                        "Welcome to UST CICS E-Library",
+                        $userBody
+                    );
+
+                    if ($adminResult === true && $userResult === true) {
                         echo "success";
-                    } else {
-                        echo "Failed: " . $result;
+                    } 
+                    else {
+                        echo "Failed: Admin Email = " . $adminResult . " | User Email = " . $userResult;
                     }
                 }
                 else {
@@ -603,6 +766,299 @@ public function updateProfileFunc($userID, $firstName, $lastName, $email, $passw
     echo "1";
 }
 
+public function logActionFunc($user_id, $action_type, $description) {
+    try {
+        $query = "INSERT INTO activity_logs_tbl (user_id, action_type, description, created_at)
+                  VALUES (:user_id, :action_type, :description, NOW())";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":user_id", $user_id);
+        $statement->bindParam(":action_type", $action_type);
+        $statement->bindParam(":description", $description);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
 }
 
+public function updateUserRoleFunc($user_id, $role) {
+    try {
+        $query = "UPDATE users_tbl 
+                  SET role = :role, updated_at = NOW()
+                  WHERE user_id = :user_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":role", $role);
+        $statement->bindParam(":user_id", $user_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function toggleUserStatusFunc($user_id) {
+    try {
+        $query = "UPDATE users_tbl 
+                  SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END,
+                      updated_at = NOW()
+                  WHERE user_id = :user_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":user_id", $user_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function deactivateUserFunc($user_id) {
+    try {
+        $query = "UPDATE users_tbl
+                  SET is_active = 0, updated_at = NOW()
+                  WHERE user_id = :user_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":user_id", $user_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function updateMaterialCopiesFunc($material_id, $total_copies, $available_copies) {
+    try {
+        $query = "UPDATE materials_tbl
+                  SET total_copies = :total_copies,
+                      available_copies = :available_copies,
+                      updated_at = NOW()
+                  WHERE material_id = :material_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":total_copies", $total_copies);
+        $statement->bindParam(":available_copies", $available_copies);
+        $statement->bindParam(":material_id", $material_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function toggleMaterialStatusFunc($material_id) {
+    try {
+        $query = "UPDATE materials_tbl
+                  SET status = CASE WHEN status = 'Active' THEN 'Inactive' ELSE 'Active' END,
+                      updated_at = NOW()
+                  WHERE material_id = :material_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":material_id", $material_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function deactivateMaterialFunc($material_id) {
+    try {
+        $query = "UPDATE materials_tbl
+                  SET status = 'Inactive',
+                      updated_at = NOW()
+                  WHERE material_id = :material_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":material_id", $material_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function getBorrowRecordsFunc() {
+    try {
+        $query = "SELECT borrow_records_tbl.*, 
+                         materials_tbl.title,
+                         materials_tbl.material_id,
+                         users_tbl.first_name,
+                         users_tbl.last_name
+                  FROM borrow_records_tbl
+                  INNER JOIN materials_tbl ON borrow_records_tbl.material_id = materials_tbl.material_id
+                  INNER JOIN users_tbl ON borrow_records_tbl.user_id = users_tbl.user_id
+                  ORDER BY borrow_records_tbl.borrow_id DESC";
+
+        $statement = $this->conn->prepare($query);
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function getReservationRecordsFunc() {
+    try {
+        $query = "SELECT reservations_tbl.*, 
+                         materials_tbl.title,
+                         users_tbl.first_name,
+                         users_tbl.last_name
+                  FROM reservations_tbl
+                  INNER JOIN materials_tbl ON reservations_tbl.material_id = materials_tbl.material_id
+                  INNER JOIN users_tbl ON reservations_tbl.user_id = users_tbl.user_id
+                  ORDER BY reservations_tbl.reservation_id DESC";
+
+        $statement = $this->conn->prepare($query);
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function approveReservationFunc($reservation_id) {
+    try {
+        $query = "UPDATE reservations_tbl
+                  SET status = 'Approved'
+                  WHERE reservation_id = :reservation_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":reservation_id", $reservation_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function cancelReservationFunc($reservation_id) {
+    try {
+        $query = "UPDATE reservations_tbl
+                  SET status = 'Cancelled'
+                  WHERE reservation_id = :reservation_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":reservation_id", $reservation_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function addSupportMessageFunc($sender_id, $sender_role, $message_type, $message) {
+    try {
+        $query = "INSERT INTO support_messages_tbl 
+                  (sender_id, sender_role, message_type, message, created_at)
+                  VALUES 
+                  (:sender_id, :sender_role, :message_type, :message, NOW())";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":sender_id", $sender_id);
+        $statement->bindParam(":sender_role", $sender_role);
+        $statement->bindParam(":message_type", $message_type);
+        $statement->bindParam(":message", $message);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function getSupportMessagesFunc() {
+    try {
+        $query = "SELECT support_messages_tbl.*, users_tbl.first_name, users_tbl.last_name
+                  FROM support_messages_tbl
+                  LEFT JOIN users_tbl ON support_messages_tbl.sender_id = users_tbl.user_id
+                  ORDER BY support_messages_tbl.message_id ASC";
+
+        $statement = $this->conn->prepare($query);
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function updateUserStatusFunc($user_id, $is_active) {
+    try {
+        $query = "UPDATE users_tbl
+                  SET is_active = :is_active
+                  WHERE user_id = :user_id";
+
+        $statement = $this->conn->prepare($query);
+        $statement->bindParam(":is_active", $is_active);
+        $statement->bindParam(":user_id", $user_id);
+
+        return $statement->execute();
+    }
+    catch(Exception $ex) {
+        http_response_code(500);
+        echo $ex->getMessage();
+        exit;
+    }
+}
+
+public function downloadMaterialFunc($userID, $materialID) {
+    $stmt = $this->conn->prepare("
+        INSERT INTO download_logs_tbl (user_id, material_id, downloaded_at)
+        VALUES (:user_id, :material_id, :downloaded_at)
+    ");
+
+    $dateNow = date("Y-m-d H:i:s");
+
+    $stmt->bindParam(":user_id", $userID);
+    $stmt->bindParam(":material_id", $materialID);
+    $stmt->bindParam(":downloaded_at", $dateNow);
+
+    return $stmt->execute();
+}
+
+
+}
 ?>
