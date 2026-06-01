@@ -44,10 +44,22 @@ else {
     $role       = $_SESSION["role"] ?? "";
     $ust_id     = $_SESSION["ust_id"] ?? "-";
     $email      = $_SESSION["email"] ?? "-";
+}
 
 if(isset($_POST["borrowBtn"])){
     $materialID = $_POST["materialID"];
+
     $usermanagement->borrowMaterialFunc($_SESSION["user_id"], $materialID);
+
+    $borrowerName = trim($_SESSION["first_name"] . " " . $_SESSION["last_name"]);
+
+    $usermanagement->addNotificationFunc(
+        null,
+        "admin",
+        "New Borrow Activity",
+        $borrowerName . " borrowed a library material.",
+        "borrow"
+    );
 
     header("Location: DashboardPage.php");
     exit;
@@ -82,8 +94,6 @@ if ($currentHour >= 5 && $currentHour < 12) {
 }
 
 $displayName = !empty($first_name) ? $first_name : "User";
-
-}
 
 $activeBorrows = $usermanagement->activeBorrowsFunc();
 $overdueItems = $usermanagement->overdueItemsFunc();
@@ -257,27 +267,37 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
         <header class="main-topbar">
             <div class="topbar-title" id="tb-title">Overview</div>
 
-            <div class="topbar-right">
-                <input class="topbar-search" type="text"
-                    placeholder="Quick search…"
-                    aria-label="Quick search"
-                    onkeydown="topbarSearch(event)" />
+<div class="topbar-right">
+    <input class="topbar-search" type="text"
+        placeholder="Quick search…"
+        aria-label="Quick search"
+        onkeydown="topbarSearch(event)" />
 
-                <button class="topbar-notif"
-                        onclick="toast('No new notifications.', 'info')"
-                        aria-label="Notifications">
-                    <svg viewBox="0 0 24 24"
-                         aria-hidden="true"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="1.8"
-                         stroke-linecap="round"
-                         stroke-linejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                    <div class="notif-dot" aria-hidden="true"></div>
-                </button>
+    <button class="topbar-notif" onclick="toggleNotifications()" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"
+             aria-hidden="true"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.8"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+
+        <span class="notif-count" id="notifCount">0</span>
+    </button>
+
+    <div class="notif-panel" id="notifPanel">
+        <div class="notif-head">
+            <strong>Notifications</strong>
+            <button type="button" onclick="markNotificationsRead()">Mark all as read</button>
+        </div>
+
+        <div class="notif-list" id="notifList">
+            <div class="notif-empty">No notifications yet.</div>
+        </div>
+    </div>
             </div>
         </header>
 
@@ -542,14 +562,14 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
             </div>
 
             <div id="opac-grid" class="table-card">
-                <table>
+                <table id="opacTable">
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Type</th>
-                            <th>Category</th>
-                            <th>Available</th>
+                            <th class="sortable" onclick="sortOPACTable(0)">Title</th>
+                            <th class="sortable" onclick="sortOPACTable(1)">Author</th>
+                            <th class="sortable" onclick="sortOPACTable(2)">Type</th>
+                            <th class="sortable" onclick="sortOPACTable(3)">Category</th>
+                            <th class="sortable" onclick="sortOPACTable(4)">Available</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -589,9 +609,16 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
 
                                             <form method="POST" class="action-form">
                                                 <input type="hidden" name="materialID" value="<?= $m["material_id"] ?>">
-                                                <button type="submit" name="downloadBtn" class="btn-sm btn-download">
-                                                    Download
-                                                </button>
+
+                                                <?php if ($m["available_copies"] > 0): ?>
+                                                    <button type="submit" name="downloadBtn" class="btn-sm btn-download">
+                                                        Download
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button type="button" class="btn-sm btn-download btn-disabled" disabled>
+                                                        Download
+                                                    </button>
+                                                <?php endif; ?>
                                             </form>
 
                                         </div>
@@ -617,15 +644,15 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                 </div>
 
                 <div class="table-card">
-                    <table>
+                    <table id="myLoansTable">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Type</th>
-                                <th>Borrow Date</th>
-                                <th>Due Date</th>
-                                <th>Status</th>
+                                <th class="sortable" onclick="sortMyLoansTable(0)">Title</th>
+                                <th class="sortable" onclick="sortMyLoansTable(1)">Author</th>
+                                <th class="sortable" onclick="sortMyLoansTable(2)">Type</th>
+                                <th class="sortable" onclick="sortMyLoansTable(3)">Borrow Date</th>
+                                <th class="sortable" onclick="sortMyLoansTable(4)">Due Date</th>
+                                <th class="sortable" onclick="sortMyLoansTable(5)">Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -678,12 +705,12 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                 </div>
 
                 <div class="table-card">
-                    <table>
+                    <table id="myResourcesTable">
                         <thead>
                             <tr>
-                                <th>Resource Title</th>
-                                <th>Type</th>
-                                <th>Description</th>
+                                <th class="sortable" onclick="sortResourcesTable(0)">Resource Title</th>
+                                <th class="sortable" onclick="sortResourcesTable(1)">Type</th>
+                                <th class="sortable" onclick="sortResourcesTable(2)">Description</th>
                                 <th>Access</th>
                             </tr>
                         </thead>
@@ -723,14 +750,14 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
             </div>
 
             <div class="table-card">
-                <table>
+                <table id="reservationsTable">
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Type</th>
-                            <th>Date Reserved</th>
-                            <th>Status</th>
+                            <th class="sortable" onclick="sortReservationsTable(0)">Title</th>
+                            <th class="sortable" onclick="sortReservationsTable(1)">Author</th>
+                            <th class="sortable" onclick="sortReservationsTable(2)">Type</th>
+                            <th class="sortable" onclick="sortReservationsTable(3, true)">Date Reserved</th>
+                            <th class="sortable" onclick="sortReservationsTable(4)">Status</th>
                         </tr>
                     </thead>
 
@@ -955,53 +982,90 @@ $myReservations = $usermanagement->getMyReservationsFunc($_SESSION["user_id"]);
                         </div>
                     </div>
 
-                    <div class="field-row">
-                        <div class="field-group">
-                            <label for="edit-fname">First Name</label>
-                            <div class="field-wrap no-icon">
-                                <input type="text" id="edit-fname"
-                                       value="<?= $first_name ?>"
-                                       autocomplete="given-name" />
-                            </div>
-                        </div>
+<div class="profile-edit-form">
 
-                        <div class="field-group">
-                            <label for="edit-lname">Last Name</label>
-                            <div class="field-wrap no-icon">
-                                <input type="text" id="edit-lname"
-                                       value="<?= $last_name ?>"
-                                       autocomplete="family-name" />
-                            </div>
-                        </div>
-                    </div>
+    <div class="field-row">
+        <div class="field-group">
+            <label for="edit-fname">First Name <span class="required">*</span></label>
+            <div class="field-wrap no-icon">
+                <input 
+                    type="text" 
+                    id="edit-fname"
+                    name="first_name"
+                    value="<?= htmlspecialchars($first_name) ?>"
+                    autocomplete="given-name"
+                    maxlength="30"
+                    oninput="this.value = this.value.replace(/[^A-Za-zÑñ\s'-]/g, ''); validateEditFirstName();"
+                    required 
+                />
+            </div>
+            <small class="field-msg" id="edit-fname-msg"></small>
+        </div>
 
-                    <div class="field-group">
-                        <label for="edit-email">Email</label>
-                        <div class="field-wrap no-icon">
-                            <input type="email" id="edit-email"
-                                   value="<?= $email ?>"
-                                   autocomplete="email" />
-                        </div>
-                    </div>
+        <div class="field-group">
+            <label for="edit-lname">Last Name <span class="required">*</span></label>
+            <div class="field-wrap no-icon">
+                <input 
+                    type="text" 
+                    id="edit-lname"
+                    name="last_name"
+                    value="<?= htmlspecialchars($last_name) ?>"
+                    autocomplete="family-name"
+                    maxlength="30"
+                    oninput="this.value = this.value.replace(/[^A-Za-zÑñ\s'-]/g, ''); validateEditLastName();"
+                    required 
+                />
+            </div>
+            <small class="field-msg" id="edit-lname-msg"></small>
+        </div>
+    </div>
 
-                    <div class="field-group">
-                        <label for="edit-pass">New Password <span style="font-weight: 400; color: var(--muted);">(leave blank to keep current)</span></label>
-                        <div class="field-wrap no-icon">
-                            <input type="password" id="edit-pass"
-                                   placeholder="New password"
-                                   autocomplete="new-password" />
-                        </div>
-                    </div>
+    <div class="field-group">
+        <label for="edit-email">Email <span class="required">*</span></label>
+        <div class="field-wrap no-icon">
+            <input 
+                type="email" 
+                id="edit-email"
+                name="email"
+                value="<?= htmlspecialchars($email) ?>"
+                autocomplete="email"
+                maxlength="50"
+                pattern="^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$"
+                title="Use your UST email address only"
+                oninput="validateEditEmail();"
+                required 
+            />
+        </div>
+        <small class="field-msg" id="edit-email-msg"></small>
+    </div>
 
-                    <button type="button"
-                            class="btn-gold"
-                            style="width: auto; padding: 11px 28px; margin-top: 8px;"
-                            onclick="updateProfileFunc()">
+    <div class="field-group">
+        <label for="edit-pass">
+            New Password 
+            <span style="font-weight: 400; color: var(--muted);">(leave blank to keep current)</span>
+        </label>
+        <div class="field-wrap no-icon">
+            <input 
+                type="password" 
+                id="edit-pass"
+                name="new_password"
+                placeholder="New password"
+                autocomplete="new-password"
+                minlength="8"
+                maxlength="30"
+                oninput="validateEditPassword();"
+            />
+        </div>
+        <small class="field-msg" id="edit-pass-msg"></small>
+    </div>
 
-                        Save Changes
+<button type="button"
+        class="btn-gold profile-save-btn"
+        onclick="updateProfileFunc()">
+    Save Changes
+</button>
 
-                    </button>
-                </div>
+</div>
 
             </div>
         </section>
@@ -1232,6 +1296,133 @@ function sendMessageOnEnter(event, type) {
     if (event.key === "Enter") {
         sendMessage(type);
     }
+}
+
+let opacSortDirection = {};
+
+function sortOPACTable(columnIndex) {
+    const table = document.getElementById("opacTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    opacSortDirection[columnIndex] = !opacSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // Available column (numbers)
+        if (columnIndex === 4) {
+            cellA = parseInt(cellA) || 0;
+            cellB = parseInt(cellB) || 0;
+        }
+
+        if (cellA < cellB) {
+            return opacSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return opacSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+let myLoansSortDirection = {};
+
+function sortMyLoansTable(columnIndex, isNumeric = false) {
+    const table = document.getElementById("myLoansTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // toggle sort direction per column
+    myLoansSortDirection[columnIndex] = !myLoansSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // handle numbers / dates if needed
+        if (isNumeric) {
+            cellA = new Date(cellA).getTime() || 0;
+            cellB = new Date(cellB).getTime() || 0;
+        }
+
+        if (cellA < cellB) {
+            return myLoansSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return myLoansSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+let resourcesSortDirection = {};
+
+function sortResourcesTable(columnIndex) {
+    const table = document.getElementById("myResourcesTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    resourcesSortDirection[columnIndex] = !resourcesSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        if (cellA < cellB) {
+            return resourcesSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return resourcesSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+let reservationsSortDirection = {};
+
+function sortReservationsTable(columnIndex, isDate = false) {
+    const table = document.getElementById("reservationsTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    reservationsSortDirection[columnIndex] = !reservationsSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // handle date sorting
+        if (isDate) {
+            cellA = new Date(cellA).getTime() || 0;
+            cellB = new Date(cellB).getTime() || 0;
+        }
+
+        if (cellA < cellB) {
+            return reservationsSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return reservationsSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
 }
 </script>
 

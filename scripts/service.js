@@ -954,3 +954,163 @@ function validateResetConfirmPassword() {
     msg.classList.add("valid");
     return true;
 }
+
+function validateEditFirstName() {
+    const fname = document.getElementById("edit-fname").value.trim();
+
+    if (fname === "") {
+        setFieldMessage("edit-fname-msg", "First name is required.", false);
+        return false;
+    }
+
+    if (fname.length > 30) {
+        setFieldMessage("edit-fname-msg", "First name must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-fname-msg", "Valid first name.", true);
+    return true;
+}
+
+function validateEditLastName() {
+    const lname = document.getElementById("edit-lname").value.trim();
+
+    if (lname === "") {
+        setFieldMessage("edit-lname-msg", "Last name is required.", false);
+        return false;
+    }
+
+    if (lname.length > 30) {
+        setFieldMessage("edit-lname-msg", "Last name must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-lname-msg", "Valid last name.", true);
+    return true;
+}
+
+function validateEditEmail() {
+    const email = document.getElementById("edit-email").value.trim();
+    const ustEmailPattern = /^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$/;
+
+    if (email === "") {
+        setFieldMessage("edit-email-msg", "Email address is required.", false);
+        return false;
+    }
+
+    if (email.length > 50) {
+        setFieldMessage("edit-email-msg", "Email must not exceed 50 characters.", false);
+        return false;
+    }
+
+    if (!ustEmailPattern.test(email)) {
+        setFieldMessage("edit-email-msg", "Use your UST email address only.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-email-msg", "Valid UST email address.", true);
+    return true;
+}
+
+function validateEditPassword() {
+    const password = document.getElementById("edit-pass").value;
+
+    if (password === "") {
+        setFieldMessage("edit-pass-msg", "", false);
+        return true; 
+    }
+
+    if (password.length < 8) {
+        setFieldMessage("edit-pass-msg", "Password must be at least 8 characters.", false);
+        return false;
+    }
+
+    if (password.length > 30) {
+        setFieldMessage("edit-pass-msg", "Password must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-pass-msg", "New password length is valid.", true);
+    return true;
+}
+
+function validateEditProfileForm() {
+    return (
+        validateEditFirstName() &&
+        validateEditLastName() &&
+        validateEditEmail() &&
+        validateEditPassword()
+    );
+}
+
+function toggleNotifications() {
+    const panel = document.getElementById("notifPanel");
+
+    if (!panel) return;
+
+    panel.classList.toggle("open");
+    loadNotifications();
+}
+
+function loadNotifications() {
+    fetch("../controllers/fetch_notifications.php")
+        .then(response => response.json())
+        .then(data => {
+            const count = document.getElementById("notifCount");
+            const list = document.getElementById("notifList");
+
+            if (!count || !list) return;
+
+            if (data.unread > 0) {
+                count.style.display = "flex";
+                count.textContent = data.unread;
+            } else {
+                count.style.display = "none";
+            }
+
+            if (!data.notifications || data.notifications.length === 0) {
+                list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
+                return;
+            }
+
+            list.innerHTML = data.notifications.map(notif => {
+                const unreadClass = notif.is_read == 0 ? "unread" : "";
+
+                return `
+                    <div class="notif-item ${unreadClass}">
+                        <div class="notif-title">${escapeHtml(notif.title)}</div>
+                        <div class="notif-message">${escapeHtml(notif.message)}</div>
+                        <div class="notif-time">${escapeHtml(notif.created_at)}</div>
+                    </div>
+                `;
+            }).join("");
+        })
+        .catch(error => {
+            console.log("Notification fetch error:", error);
+        });
+}
+
+function markNotificationsRead() {
+    fetch("../controllers/mark_notifications_read.php", {
+        method: "POST"
+    })
+    .then(response => response.text())
+    .then(result => {
+        if (result.trim() === "success") {
+            loadNotifications();
+        }
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("notifPanel")) {
+        loadNotifications();
+        setInterval(loadNotifications, 10000);
+    }
+});

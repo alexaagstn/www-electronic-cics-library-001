@@ -1,18 +1,9 @@
-/* ==========================================================
-   UST CICS E-LIBRARY — UNIFIED STYLESHEET
-   Single source of truth. No overrides needed.
-   ========================================================== */
-
-/* ── RESET ──────────────────────────────────────────────── */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ── DESIGN TOKENS ───────────────────────────────────────
-   Canonical token set mapped to the new palette.
-   -------------------------------------------------------- */
 :root {
     --main-bg:    #F8F5E8;
     --card:       #FFFFFF;
@@ -29,8 +20,6 @@
     --charcoal:   #3E3E3E;
     --border:     rgba(0, 0, 0, 0.10);
     --border-dark: rgba(255, 255, 255, 0.12);
-
-    /* ── Derived / compatibility aliases ── */
 
     /* Gold palette */
     --gold-subtle:  rgba(212, 175, 55, 0.12);
@@ -71,7 +60,6 @@
     --shadow-dark: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 
-/* ── BASE ────────────────────────────────────────────────── */
 body {
     font-family: 'Sora', Arial, sans-serif;
     background: var(--surface-light);
@@ -81,7 +69,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* ── AUTH SCREEN ─────────────────────────────────────────── */
 .screen {
     display: flex;
     min-height: 100vh;
@@ -226,7 +213,6 @@ body {
     line-height: 1.5;
 }
 
-/* ── AUTH FORM ───────────────────────────────────────────── */
 .form-head {
     margin-bottom: 28px;
 }
@@ -428,7 +414,6 @@ body {
     color: var(--gold-light);
 }
 
-/* ── BUTTONS ─────────────────────────────────────────────── */
 .btn-gold,
 .form-btn,
 .btn-primary {
@@ -626,7 +611,6 @@ body {
     flex-shrink: 0;
 }
 
-/* ── ALERTS ──────────────────────────────────────────────── */
 .alert {
     display: none;
     padding: 11px 14px;
@@ -656,7 +640,6 @@ body {
     color: var(--color-info);
 }
 
-/* ── MISC AUTH COMPONENTS ────────────────────────────────── */
 .divider {
     display: flex;
     align-items: center;
@@ -735,7 +718,6 @@ body {
     text-decoration: underline;
 }
 
-/* ── FORGOT PASSWORD MODAL ───────────────────────────────── */
 .forgot-modal {
     position: fixed;
     inset: 0;
@@ -815,7 +797,6 @@ body {
 
 .forgot-close:hover { color: var(--text-on-dark); }
 
-/* ── ANIMATIONS ──────────────────────────────────────────── */
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -826,14 +807,12 @@ body {
 .fade-up-3 { animation: fadeUp 0.4s ease both; animation-delay: 0.20s; }
 .fade-up-4 { animation: fadeUp 0.4s ease both; animation-delay: 0.28s; }
 
-/* ── DASHBOARD LAYOUT ────────────────────────────────────── */
 #page-dashboard {
     display: flex;
     min-height: 100vh;
     background: var(--surface-light);
 }
 
-/* ── SIDEBAR ─────────────────────────────────────────────── */
 .sidebar {
     width: 230px;
     min-width: 230px;
@@ -995,7 +974,6 @@ body {
     padding: 20px 15px;
 }
 
-/* ── TOPBAR ──────────────────────────────────────────────── */
 .main-area {
     flex: 1;
     display: flex;
@@ -1097,7 +1075,6 @@ body {
     border: 1px solid var(--surface-dark-topbar);
 }
 
-/* ── PANELS ──────────────────────────────────────────────── */
 .panel {
     display: none;
     padding: 32px;
@@ -1123,19 +1100,16 @@ body {
     margin-bottom: 4px;
 }
 
-/* Profile panel — dark card context */
 #p-profile .sec-head h3 {
     color: var(--text-on-dark);
 }
 
-/* Profile panel — outer section heading (light context) */
 #p-profile > .sec-head h3 {
     color: var(--text);
 }
 
 .sec-head p { font-size: 13px; color: var(--muted); }
 
-/* ── STAT CARDS ──────────────────────────────────────────── */
 .stat-grid,
 .stats-row {
     display: grid;
@@ -1216,7 +1190,6 @@ body {
     background: rgba(176, 0, 42, 0.10);
 }
 
-/* ── OVERVIEW / ACTIVITY ─────────────────────────────────── */
 .overview-grid {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -1273,7 +1246,6 @@ body {
     background: var(--gold);
 }
 
-/* ── QUICK STATS (dark cards) ────────────────────────────── */
 .quick-stats {
     display: flex;
     flex-direction: column;
@@ -1320,7 +1292,6 @@ body {
     transition: width 0.5s ease;
 }
 
-/* ── TABLES ──────────────────────────────────────────────── */
 .table-card,
 .activity-card {
     background: var(--card);
@@ -1395,7 +1366,6 @@ body {
 
 .act-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-/* ── TOOLBARS ────────────────────────────────────────────── */
 .db-toolbar,
 .admin-toolbar {
     display: flex;
@@ -1457,7 +1427,6 @@ body {
 
 .mini-number { width: 72px; }
 
-/* ── FORM CARD (add/edit forms) ──────────────────────────── */
 .form-card {
     background: var(--surface-dark-raised);
     border: 1px solid var(--gold-border);
@@ -1532,7 +1501,6 @@ body {
 
 .form-btn:hover { opacity: 0.92; transform: translateY(-1px); }
 
-/* ── STATUS PILLS ────────────────────────────────────────── */
 .status-pill {
     display: inline-flex;
     align-items: center;
@@ -1558,7 +1526,6 @@ body {
     color: var(--color-danger);
 }
 
-/* ── CHART CARDS (dark) ──────────────────────────────────── */
 .chart-card-sm,
 .chart-card-wide {
     background: var(--surface-dark-raised);
@@ -1596,7 +1563,6 @@ body {
     height: 100% !important;
 }
 
-/* ── USAGE CHART ─────────────────────────────────────────── */
 .under-divider {
     height: 1px;
     margin: 18px 0 24px;
@@ -1796,7 +1762,6 @@ body {
 
 .ust-chart-item span { font-size: 12px; color: var(--text-on-dark-muted); text-align: center; }
 
-/* ── ANNOUNCEMENT / HERO BANNER (dark) ───────────────────── */
 .announcement {
     background: var(--surface-dark);
     border: 1px solid var(--border-dark);
@@ -1899,7 +1864,6 @@ body {
     letter-spacing: 0.1em;
 }
 
-/* ── QUICK SEARCH PANEL (light) ──────────────────────────── */
 .quick-search {
     background: var(--card);
     border: 1px solid var(--border);
@@ -1937,7 +1901,6 @@ body {
 
 .qs-input-wrap input::placeholder { color: var(--muted); }
 
-/* ── FILTER PILLS / CAT CHIPS (light) ────────────────────── */
 .filter-pill,
 .cat-chip {
     padding: 7px 14px;
@@ -1972,7 +1935,6 @@ body {
     margin-bottom: 28px;
 }
 
-/* ── BOOKS ───────────────────────────────────────────────── */
 .books-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -2062,7 +2024,6 @@ body {
     color: var(--text-on-gold);
 }
 
-/* ── SECTION HEADER ──────────────────────────────────────── */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -2099,7 +2060,6 @@ body {
     opacity: 0.7;
 }
 
-/* ── TWO COLUMN LAYOUTS ──────────────────────────────────── */
 .two-col {
     display: grid;
     grid-template-columns: 1fr 360px;
@@ -2121,7 +2081,6 @@ body {
     align-items: center;
 }
 
-/* ── PROFILE (dark cards) ────────────────────────────────── */
 .profile-layout {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -2215,7 +2174,6 @@ body {
     word-break: break-all;
 }
 
-/* ── MODAL ───────────────────────────────────────────────── */
 .modal-bg {
     display: none;
     position: fixed;
@@ -2294,7 +2252,6 @@ body {
     margin-top: 20px;
 }
 
-/* ── TOAST ───────────────────────────────────────────────── */
 #toast {
     position: fixed;
     bottom: 28px;
@@ -2327,7 +2284,6 @@ body {
 .toast-item.error   { background: rgba(176,   0,  42, 0.15); border: 1px solid rgba(176,   0,  42, 0.35); color: var(--color-danger); }
 .toast-item.warning { background: rgba(155, 122,  20, 0.15); border: 1px solid rgba(155, 122,  20, 0.35); color: var(--gold-dark); }
 
-/* ── CHAT / MESSAGES ─────────────────────────────────────── */
 .chat-panel {
     background: var(--surface-dark-raised);
     border: 1px solid var(--gold-border);
@@ -2399,7 +2355,6 @@ body {
 
 .chat-input-area button:hover { opacity: 0.9; }
 
-/* messages shell */
 .messages-shell {
     background: var(--surface-dark-raised);
     border: 1px solid var(--gold-border);
@@ -2505,7 +2460,6 @@ body {
 
 .msg-input-row button:hover { opacity: 0.9; }
 
-/* ── SUPPORT ─────────────────────────────────────────────── */
 .support-shell {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -2619,7 +2573,6 @@ body {
 
 .support-reply-row button:hover { opacity: 0.9; }
 
-/* ── EMPTY STATE ─────────────────────────────────────────── */
 .empty-state {
     display: flex;
     flex-direction: column;
@@ -2643,7 +2596,6 @@ body {
 
 .empty-state p { font-size: 13px; font-style: italic; }
 
-/* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 1100px) {
     .overview-grid     { grid-template-columns: 1fr; }
     .profile-layout    { grid-template-columns: 1fr; }
@@ -2681,8 +2633,6 @@ body {
     .panel              { padding: 20px 16px; }
 }
 
-/* Quick OPAC Search filter buttons font consistency */
-
 .filter-pill,
 .quick-search .btn-primary {
     font-family: 'Poppins', !important;
@@ -2701,8 +2651,6 @@ body {
     padding: 8px 16px !important;
     border-radius: 999px !important;
 }
-
-/* ORGANIZED ADMIN ACTION BUTTONS */
 
 .action-group {
     display: flex !important;
@@ -2776,8 +2724,6 @@ body {
     background: var(--danger) !important;
     color: #ffffff !important;
 }
-
-/* PROFESSIONAL USER DIRECTORY TABLE */
 
 #adminUsersTable th {
     font-size: 11px !important;
@@ -2865,11 +2811,6 @@ body {
     border-radius: 10px;
 }
 
-/* =========================================================
-   FINAL CSS FOR MATERIALS TABLE DIRECTORY LAYOUT
-   Paste at the VERY BOTTOM of style.css
-========================================================= */
-
 #adminMaterialsTable {
     width: 100%;
     border-collapse: collapse;
@@ -2893,8 +2834,6 @@ body {
 #adminMaterialsTable tbody tr:hover td {
     background: rgba(201, 163, 77, 0.08) !important;
 }
-
-/* Material info column */
 
 .material-cell {
     display: flex;
@@ -2928,7 +2867,6 @@ body {
     letter-spacing: 0.08em;
 }
 
-/* Category column */
 
 .category-cell {
     max-width: 190px;
@@ -2937,8 +2875,6 @@ body {
     color: var(--text);
     line-height: 1.4;
 }
-
-/* Copies form */
 
 .copies-form {
     display: flex;
@@ -2981,8 +2917,6 @@ body {
     background: #fffdf8;
 }
 
-/* Action buttons */
-
 .material-save-btn {
     width: 100%;
     height: 36px;
@@ -3000,8 +2934,6 @@ body {
     height: 36px;
     border-radius: 10px;
 }
-
-/* Button styles */
 
 .btn-mini {
     min-height: 34px !important;
@@ -3043,8 +2975,6 @@ body {
     color: #ffffff !important;
 }
 
-/* Status pill */
-
 .status-pill {
     display: inline-flex;
     align-items: center;
@@ -3066,8 +2996,6 @@ body {
     color: var(--muted) !important;
 }
 
-/* Mobile/table overflow fix */
-
 .table-card {
     overflow-x: auto !important;
 }
@@ -3085,8 +3013,6 @@ body {
         min-width: 130px;
     }
 }
-
-/* BORROW & RESERVATION CLEAN HTML LAYOUT */
 
 .table-head {
     display: flex;
@@ -3200,8 +3126,6 @@ body {
     }
 }
 
-/* Separate Borrow & Reservation Tables */
-
 .circulation-stack {
     display: flex !important;
     flex-direction: column !important;
@@ -3298,7 +3222,6 @@ body {
     color: #ffd978;
 }
 
-/* Small arrow icon */
 #adminMaterialsTable th::after {
     content: "↕";
     font-size: 12px;
@@ -3307,7 +3230,6 @@ body {
     transition: all 0.25s ease;
 }
 
-/* Do not show arrow on Action column */
 #adminMaterialsTable th:last-child::after {
     content: "";
 }
@@ -3317,17 +3239,14 @@ body {
     color: #ffd978;
 }
 
-/* Remove arrow only on Copies column */
 #adminMaterialsTable th:nth-child(4)::after {
     content: none !important;
 }
 
-/* Optional: make Copies not look clickable */
 #adminMaterialsTable th:nth-child(4) {
     cursor: default;
 }
 
-/* Optional: remove hover effect only on Copies */
 #adminMaterialsTable th:nth-child(4):hover {
     background: rgba(255, 255, 255, 0.04);
     color: #f5e7c6;
@@ -3357,7 +3276,6 @@ body {
     background: rgba(255, 255, 255, 0.04);
 }
 
-/* Only sortable columns */
 #adminUsersTable th.sortable {
     cursor: pointer;
     user-select: none;
@@ -3382,7 +3300,6 @@ body {
     color: #ffd978;
 }
 
-/* Action column has no arrow and no hover */
 #adminUsersTable th:not(.sortable)::after {
     content: none !important;
 }
@@ -3411,10 +3328,10 @@ body {
 
 .field-row {
     display: flex;
-    gap: 14px; /* bawas space sa pagitan ng left and right fields */
+    gap: 14px;
     margin-bottom: 12px;
 }
-/* REGISTRATION PAGE ONLY */
+
 #page-register .field-group {
     flex: 1;
     margin-bottom: 10px;
@@ -3423,19 +3340,19 @@ body {
 
 .field-group label {
     display: block;
-    margin-bottom: 6px; /* lapit ng label sa input */
+    margin-bottom: 6px;
 }
 
 .field-wrap {
-    margin-bottom: 2px; /* lapit ng input sa validation text */
+    margin-bottom: 2px; 
 }
 
 .field-msg {
     display: block;
-    margin-top: 6px;   /* lapit ng green/red message sa input */
+    margin-top: 6px;   
     font-size: 12px;
     font-weight: 500;
-    min-height: 10px;  /* mas maliit para hindi malaki ang space */
+    min-height: 10px;  
     line-height: 1.2;
 }
 
@@ -3457,7 +3374,6 @@ body {
     color: #ff6b6b;
 }
 
-/* LOGIN PAGE FINAL SPACING FIX */
 #page-login .auth-right {
     gap: 10px !important;
 }
@@ -3502,175 +3418,575 @@ body {
     margin-bottom: 10px !important;
 }
 
-/* RESET PASSWORD PAGE */
-.reset-page {
-    min-height: 100vh;
+.profile-edit-form {
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-edit-form .field-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0 !important;
+}
+
+.profile-edit-form .field-group {
+    flex: .5;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.profile-edit-form .field-group label {
+    display: block;
+    margin-bottom: 5px !important;
+}
+
+.profile-edit-form .field-wrap {
+    margin-bottom: 0 !important;
+}
+
+.profile-edit-form .field-msg {
+    display: none;
+    margin-top: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 2;
+}
+
+.profile-edit-form .field-msg.valid {
+    display: block;
+    color: #4caf50;
+}
+
+.profile-edit-form .field-msg.invalid {
+    display: block;
+    color: #ff6b6b;
+}
+
+.profile-edit-form .btn-gold {
+    margin-top: 8px !important;
+}
+
+.profile-edit-form .profile-save-btn {
+    width: 160px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    margin-top: 10px !important;
+    border-radius: 7px !important;
+    font-size: 14px !important;
+    font-weight: 750 !important;
+    letter-spacing: 1px !important;
+}
+
+#adminLogsTable th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: 0.25s ease;
+}
+
+#adminLogsTable th.sortable::after {
+    content: "↕";
+    font-size: 12px;
+    opacity: 0.45;
+    margin-left: 8px;
+}
+
+#adminLogsTable th.sortable:hover {
+    color: #ffd978;
+}
+
+#adminLogsTable th.sortable:hover::after {
+    opacity: 1;
+    color: #ffd978;
+}
+
+.notif-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #d4af37;
+    color: #111;
+    font-size: 11px;
+    font-weight: 800;
+    display: none;
     align-items: center;
     justify-content: center;
-    padding: 32px 18px;
-    background:
-        radial-gradient(circle at top left, rgba(212, 175, 55, 0.22), transparent 32%),
-        linear-gradient(135deg, #17100a 0%, #2b1b0f 45%, #4a3212 100%);
 }
 
-.reset-card {
-    width: 100%;
-    max-width: 460px;
-    padding: 34px;
-    border-radius: 24px;
-    background: rgba(255, 252, 244, 0.96);
-    border: 1px solid rgba(212, 175, 55, 0.28);
-    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.35);
+.notif-panel {
+    position: absolute;
+    top: 70px;
+    right: 28px;
+    width: 360px;
+    max-height: 420px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #161616;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+    display: none;
+    z-index: 50;
 }
 
-.reset-brand {
-    margin-bottom: 26px;
-}
-
-.reset-brand span {
-    display: inline-block;
-    margin-bottom: 10px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.6px;
-    text-transform: uppercase;
-    color: #9a7623;
-}
-
-.reset-brand h1 {
-    margin: 0;
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: 34px;
-    line-height: 1.1;
-    color: #2b1b0f;
-}
-
-.reset-brand p {
-    margin: 10px 0 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #6c604d;
-}
-
-.reset-field {
-    margin-bottom: 16px;
-}
-
-.reset-field label {
+.notif-panel.open {
     display: block;
-    margin-bottom: 7px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #3a2a17;
 }
 
-.reset-input-wrap {
+.notif-head {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #f5e7c6;
+}
+
+.notif-head button {
+    border: none;
+    background: transparent;
+    color: #d4af37;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.notif-list {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.notif-item.unread {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.notif-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #f5e7c6;
+    margin-bottom: 4px;
+}
+
+.notif-message {
+    font-size: 12px;
+    color: rgba(245,231,198,0.72);
+    line-height: 1.5;
+}
+
+.notif-time {
+    margin-top: 7px;
+    font-size: 11px;
+    color: rgba(245,231,198,0.45);
+}
+
+.notif-empty {
+    padding: 24px;
+    text-align: center;
+    color: rgba(245,231,198,0.55);
+    font-size: 13px;
+}
+
+.topbar-right {
     position: relative;
 }
 
-.reset-input-wrap input {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px 0 46px;
-    border-radius: 14px;
-    border: 1px solid rgba(75, 54, 22, 0.18);
-    background: #fffaf0;
-    color: #2b1b0f;
-    font-family: "Sora", Arial, sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: 0.2s ease;
+.topbar-notif {
+    position: relative;
 }
 
-.reset-input-wrap input:focus {
-    border-color: #d4af37;
-    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.16);
-    background: #ffffff;
-}
-
-.reset-icon {
+.notif-count {
     position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
     height: 18px;
-    color: #9a7623;
-}
-
-.reset-icon svg {
-    width: 18px;
-    height: 18px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.reset-msg {
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #d4af37;
+    color: #111;
+    font-size: 11px;
+    font-weight: 800;
     display: none;
-    margin-top: 5px;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.2;
+    align-items: center;
+    justify-content: center;
+    line-height: 18px;
 }
 
-.reset-msg.valid {
+.notif-panel {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 340px;
+    max-height: 420px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #161616;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+    display: none;
+    z-index: 9999;
+}
+
+.notif-panel.open {
     display: block;
-    color: #3f9b4f;
 }
 
-.reset-msg.invalid {
-    display: block;
-    color: #d94b4b;
+.notif-head {
+    padding: 15px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #f5e7c6;
 }
 
-.reset-note {
-    margin: 18px 0;
-    padding: 13px 15px;
-    border-radius: 14px;
-    background: #f7efd9;
-    border: 1px solid rgba(212, 175, 55, 0.28);
-    color: #6a5734;
-    font-size: 12.5px;
-    line-height: 1.6;
-}
-
-.reset-btn {
-    width: 100%;
-    height: 48px;
+.notif-head button {
     border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #d4af37, #9a7623);
-    color: #1f1608;
-    font-family: "Sora", Arial, sans-serif;
-    font-size: 14px;
-    font-weight: 800;
+    background: transparent;
+    color: #d4af37;
     cursor: pointer;
-    box-shadow: 0 14px 30px rgba(154, 118, 35, 0.28);
-    transition: 0.2s ease;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.reset-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 18px 38px rgba(154, 118, 35, 0.34);
+.notif-list {
+    max-height: 340px;
+    overflow-y: auto;
 }
 
-.reset-footer {
-    margin-top: 22px;
-    text-align: center;
+.notif-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.notif-item.unread {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.notif-title {
     font-size: 13px;
-    color: #6c604d;
-}
-
-.reset-footer a {
-    color: #9a7623;
     font-weight: 800;
-    text-decoration: none;
+    color: #f5e7c6;
+    margin-bottom: 4px;
 }
 
-.reset-footer a:hover {
-    text-decoration: underline;
+.notif-message {
+    font-size: 12px;
+    color: rgba(245,231,198,0.72);
+    line-height: 1.5;
+}
+
+.notif-time {
+    margin-top: 7px;
+    font-size: 11px;
+    color: rgba(245,231,198,0.45);
+}
+
+.notif-empty {
+    padding: 24px;
+    text-align: center;
+    color: rgba(245,231,198,0.55);
+    font-size: 13px;
+}
+
+.notif-wrap {
+    position: relative;
+}
+
+.topbar-notif {
+    position: relative;
+}
+
+.notif-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #d4af37;
+    color: #111;
+    font-size: 11px;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 18px;
+}
+
+.notif-panel {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 340px;
+    max-height: 420px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #161616;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+    display: none;
+    z-index: 9999;
+}
+
+.notif-panel.open {
+    display: block;
+}
+
+.notif-head {
+    padding: 15px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #f5e7c6;
+}
+
+.notif-head button {
+    border: none;
+    background: transparent;
+    color: #d4af37;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.notif-list {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.notif-item.unread {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.notif-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #f5e7c6;
+    margin-bottom: 4px;
+}
+
+.notif-message {
+    font-size: 12px;
+    color: rgba(245,231,198,0.72);
+    line-height: 1.5;
+}
+
+.notif-time {
+    margin-top: 7px;
+    font-size: 11px;
+    color: rgba(245,231,198,0.45);
+}
+
+.notif-empty {
+    padding: 24px;
+    text-align: center;
+    color: rgba(245,231,198,0.55);
+    font-size: 13px;
+}
+
+.notif-wrap {
+    position: relative;
+}
+
+.topbar-notif {
+    position: relative;
+}
+
+.notif-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #d4af37;
+    color: #111;
+    font-size: 11px;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 18px;
+}
+
+.notif-panel {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 340px;
+    max-height: 420px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #161616;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+    display: none;
+    z-index: 9999;
+}
+
+.notif-panel.open {
+    display: block;
+}
+
+.notif-head {
+    padding: 15px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #f5e7c6;
+}
+
+.notif-head button {
+    border: none;
+    background: transparent;
+    color: #d4af37;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.notif-list {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.notif-item.unread {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.notif-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #f5e7c6;
+    margin-bottom: 4px;
+}
+
+.notif-message {
+    font-size: 12px;
+    color: rgba(245,231,198,0.72);
+    line-height: 1.5;
+}
+
+.notif-time {
+    margin-top: 7px;
+    font-size: 11px;
+    color: rgba(245,231,198,0.45);
+}
+
+.notif-empty {
+    padding: 24px;
+    text-align: center;
+    color: rgba(245,231,198,0.55);
+    font-size: 13px;
+}
+
+#opacTable th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: 0.25s ease;
+}
+
+table th.sortable::after {
+    content: "↕";
+    font-size: 12px;
+    opacity: 0.45;
+    margin-left: 8px;
+}
+
+#opacTable th.sortable:hover {
+    color: #ffd978;
+}
+
+#opacTable th.sortable:hover::after {
+    opacity: 1;
+    color: #ffd978;
+}
+
+#p-mybooks th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: 0.25s ease;
+}
+
+#p-mybooks th.sortable::after {
+    content: "↕";
+    font-size: 12px;
+    opacity: 0.45;
+    margin-left: 8px;
+}
+
+#p-mybooks th.sortable:hover {
+    color: #ffd978;
+}
+
+#p-mybooks th.sortable:hover::after {
+    opacity: 1;
+    color: #ffd978;
+}
+
+#myResourcesTable th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: 0.25s ease;
+}
+
+#myResourcesTable th.sortable::after {
+    content: "↕";
+    font-size: 12px;
+    opacity: 0.45;
+    margin-left: 8px;
+}
+
+#myResourcesTable th.sortable:hover {
+    color: #ffd978;
+}
+
+#myResourcesTable th.sortable:hover::after {
+    opacity: 1;
+    color: #ffd978;
+}
+
+#reservationsTable th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: 0.25s ease;
+}
+
+#reservationsTable th.sortable::after {
+    content: "↕";
+    font-size: 12px;
+    opacity: 0.45;
+    margin-left: 8px;
+}
+
+#reservationsTable th.sortable:hover {
+    color: #ffd978;
+}
+
+#reservationsTable th.sortable:hover::after {
+    opacity: 1;
+    color: #ffd978;
 }

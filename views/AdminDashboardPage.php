@@ -420,20 +420,35 @@ $sundayPercent = ($sundayUsage / $maxUsage) * 100;
     </aside>
 
     <main class="main-area">
-        <div class="main-topbar">
-            <div class="topbar-title" id="tb-title">Overview</div>
+  <div class="main-topbar">
+    <div class="topbar-title" id="tb-title">Overview</div>
 
-            <div class="topbar-right">
-                <input type="text" class="topbar-search" placeholder="Quick search...">
-                <button class="topbar-notif" onclick="adminToast('No new notifications.')" aria-label="Notifications">
-                    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                    <div class="notif-dot" aria-hidden="true"></div>
-                </button>
+    <div class="topbar-right">
+        <input type="text" class="topbar-search" placeholder="Quick search...">
+
+        <div class="notif-wrap">
+            <button class="topbar-notif" onclick="toggleNotifications()" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+
+                <span class="notif-count" id="notifCount">0</span>
+            </button>
+
+            <div class="notif-panel" id="notifPanel">
+                <div class="notif-head">
+                    <strong>Notifications</strong>
+                    <button type="button" onclick="markNotificationsRead()">Mark all as read</button>
+                </div>
+
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty">No notifications yet.</div>
+                </div>
             </div>
         </div>
+    </div>
+</div>
 
         <section id="p-overview" class="panel active">
             <div class="sec-head">
@@ -1092,10 +1107,10 @@ $sundayPercent = ($sundayUsage / $maxUsage) * 100;
                 <table id="adminLogsTable">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Action</th>
+                            <th class="sortable" onclick="sortLogsTable(0)">User</th>
+                            <th class="sortable" onclick="sortLogsTable(1)">Action</th>
                             <th>Description</th>
-                            <th>Date</th>
+                            <th class="sortable" onclick="sortLogsTable(3)">Date</th>
                         </tr>
                     </thead>
 
@@ -1514,6 +1529,39 @@ function openUserEditModal(userId, fullName, role, status) {
 
 function closeUserEditModal() {
     document.getElementById("userEditModal").classList.remove("open");
+}
+
+let logsSortDirection = {};
+
+function sortLogsTable(columnIndex) {
+    const table = document.getElementById("adminLogsTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    logsSortDirection[columnIndex] = !logsSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // Date column
+        if (columnIndex === 3) {
+            cellA = new Date(cellA);
+            cellB = new Date(cellB);
+        }
+
+        if (cellA < cellB) {
+            return logsSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return logsSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
 }
 
 </script>

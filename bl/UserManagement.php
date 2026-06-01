@@ -1059,6 +1059,25 @@ public function downloadMaterialFunc($userID, $materialID) {
     return $stmt->execute();
 }
 
+public function addNotificationFunc($user_id, $target_role, $title, $message, $notification_type) {
+    $db = new Database();
+    $conn = $db->connectDB();
+
+    $stmt = $conn->prepare("
+        INSERT INTO notifications_tbl
+        (user_id, target_role, title, message, notification_type, is_read, created_at)
+        VALUES
+        (:user_id, :target_role, :title, :message, :notification_type, 0, NOW())
+    ");
+
+    return $stmt->execute([
+        ":user_id" => $user_id,
+        ":target_role" => $target_role,
+        ":title" => $title,
+        ":message" => $message,
+        ":notification_type" => $notification_type
+    ]);
+}
 
 }
 ?>
