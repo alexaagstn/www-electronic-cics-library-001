@@ -104,6 +104,12 @@ function doLogin() {
     document.getElementById("login-alert").classList.remove("show");
     document.getElementById("login-alert").innerHTML = "";
 
+    if (!validateLoginFormLive()) {
+        document.getElementById("login-alert").textContent = "Kindly check your email and password before signing in.";
+        document.getElementById("login-alert").style.display = "block";
+        return;
+    }
+
     if (email === "" || password === "") {
         document.getElementById("login-alert").classList.add("show");
         document.getElementById("login-alert").innerHTML = "Please fill in all fields.";
@@ -183,10 +189,17 @@ function checkStrength() {
 
     let score = 0;
 
-    if (pass.length >= 6) score++;
-    if (/[A-Z]/.test(pass)) score++;
-    if (/[0-9]/.test(pass)) score++;
-    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    let weakPasswords = [
+        "123456",
+        "000000",
+        "abcdef",
+        "password",
+        "login",
+        "qwerty",
+        "p@ssw0rd123"
+    ];
+
+    let lowerPass = pass.toLowerCase();
 
     if (pass.length === 0) {
         fill.style.width = "0%";
@@ -194,21 +207,40 @@ function checkStrength() {
         return;
     }
 
-    if (score === 1) {
+    for (let i = 0; i < weakPasswords.length; i++) {
+
+        if (lowerPass.includes(weakPasswords[i])) {
+            fill.style.width = "25%";
+            fill.style.background = "#F05252";
+            text.innerHTML = "Weak password";
+            return;
+        }
+    }
+
+    if (pass.length >= 12) score++;
+
+    if (/[A-Z]/.test(pass)) score++;
+
+    if (/[a-z]/.test(pass)) score++;
+
+    if (/[0-9]/.test(pass)) score++;
+
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+    if (pass.includes("-")) score++;
+
+    if (score <= 2) {
         fill.style.width = "25%";
         fill.style.background = "#F05252";
         text.innerHTML = "Weak password";
     }
-    else if (score === 2) {
-        fill.style.width = "50%";
+
+    else if (score === 3 || score === 4) {
+        fill.style.width = "60%";
         fill.style.background = "#F0A030";
-        text.innerHTML = "Fair password";
-    }
-    else if (score === 3) {
-        fill.style.width = "75%";
-        fill.style.background = "#3B9FD4";
         text.innerHTML = "Good password";
     }
+
     else {
         fill.style.width = "100%";
         fill.style.background = "#34C47A";
@@ -232,12 +264,32 @@ function doRegister() {
     document.getElementById("reg-alert").innerHTML = "";
     document.getElementById("reg-success").innerHTML = "";
 
+    if (!validateRegisterFormLive()) {
+    document.getElementById("reg-alert").textContent = "Kindly check the highlighted fields before creating your account.";
+    document.getElementById("reg-alert").style.display = "block";
+    return;
+}
+
     if (firstName === "" || lastName === "" || ustID === "" || email === "" || password === "" || confirmPassword === "" || username === "") {
         document.getElementById("reg-alert").classList.add("show");
         document.getElementById("reg-alert").innerHTML = "Please fill in all required fields.";
         return;
     }
 
+    if (!/^\d{10}$/.test(ustID)) {
+        document.getElementById("reg-alert").classList.add("show");
+        document.getElementById("reg-alert").innerHTML = "Please enter a valid 10-digit UST ID.";
+        return;
+    }
+
+    let yearPrefix = parseInt(ustID.substring(0,4));
+
+    if(yearPrefix > 2025){
+        document.getElementById("reg-alert").classList.add("show");
+        document.getElementById("reg-alert").innerHTML = "Please enter a valid UST ID number.";
+        return;
+    }
+       
     if (selectedRole === "student" && (course === "" || year === "")) {
         document.getElementById("reg-alert").classList.add("show");
         document.getElementById("reg-alert").innerHTML = "Please fill in all required fields.";
@@ -248,6 +300,32 @@ function doRegister() {
         document.getElementById("reg-alert").classList.add("show");
         document.getElementById("reg-alert").innerHTML = "Passwords do not match.";
         return;
+    }
+
+    if (selectedRole === "student") {
+
+        if (!email.toLowerCase().endsWith(".cics@ust.edu.ph")) {
+
+            document.getElementById("reg-alert").classList.add("show");
+
+            document.getElementById("reg-alert").innerHTML =
+            "Please use your official CICS email address.";
+
+            return;
+        }
+    }
+
+    else if (selectedRole === "faculty") {
+
+        if (!email.toLowerCase().endsWith("@ust.edu.ph")) {
+
+            document.getElementById("reg-alert").classList.add("show");
+
+            document.getElementById("reg-alert").innerHTML =
+            "Please use your official UST email address.";
+
+            return;
+        }
     }
 
     $.ajax({
@@ -280,6 +358,10 @@ function doRegister() {
                 document.getElementById("reg-alert").classList.add("show");
                 document.getElementById("reg-alert").innerHTML = "UST ID or Email already exists.";
             }
+            else if (returnedData == "invalid_email") {
+                    document.getElementById("reg-alert").classList.add("show");
+                    document.getElementById("reg-alert").innerHTML = "UST email only.";
+            }
             else {
                 document.getElementById("reg-alert").classList.add("show");
                 document.getElementById("reg-alert").innerHTML = "Registration failed.";
@@ -294,5 +376,741 @@ function doRegister() {
 document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("chip-student") && document.getElementById("chip-faculty")) {
         selectRole("student");
+    }
+});
+
+function renderOpac() {
+
+    let search =
+    document.getElementById("opac-q").value.toLowerCase();
+
+    let category =
+    document.getElementById("opac-cat").value.toLowerCase();
+
+    let rows =
+    document.querySelectorAll("#opac-grid tbody tr");
+
+    rows.forEach(function(row) {
+
+        let text =
+        row.innerText.toLowerCase();
+
+        let categoryCell =
+        row.children[3].innerText.toLowerCase();
+
+        let matchesSearch =
+        text.includes(search);
+
+        let matchesCategory =
+        category === "" ||
+        categoryCell.includes(category);
+
+        if(matchesSearch && matchesCategory){
+            row.style.display = "";
+        }
+        else{
+            row.style.display = "none";
+        }
+    });
+}
+
+function updateProfileFunc() {
+    let firstName = document.getElementById("edit-fname").value;
+    let lastName = document.getElementById("edit-lname").value;
+    let email = document.getElementById("edit-email").value;
+    let password = document.getElementById("edit-pass").value;
+
+    $.ajax({
+        url: "../controllers/Controller.php",
+        type: "POST",
+        data: {
+            updateProfile: true,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password
+        },
+        success: function(response) {
+            if(response.trim() == "1") {
+                alert("Profile updated successfully.");
+                location.reload();
+            }
+            else {
+                alert(response);
+            }
+        }
+    });
+}
+
+function openForgotModal() {
+    document.getElementById("forgotModal").style.display = "flex";
+}
+
+function closeForgotModal() {
+    document.getElementById("forgotModal").style.display = "none";
+}
+
+function sendResetFunc() {
+    if (!validateForgotEmail()) {
+        return;
+    }
+
+    const email = document.getElementById("forgot-email").value.trim();
+
+    const formData = new FormData();
+    formData.append("email", email);
+
+    fetch("../controllers/forgot_password.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(result => {
+        result = result.trim();
+
+        if (result === "success") {
+            alert("If the email is registered, password reset instructions will be sent.");
+            closeForgotModal();
+        } else if (result === "invalid_email") {
+            alert("Please use your UST email address.");
+        } else if (result === "email_failed") {
+            alert("Reset link was created, but the email could not be sent.");
+        } else {
+            alert("Something went wrong. Please try again.");
+            console.log(result);
+        }
+    })
+    .catch(error => {
+        console.log("Forgot password error:", error);
+        alert("Something went wrong. Please try again.");
+    });
+}
+
+let sortDirection = {};
+
+function sortTable(columnIndex) {
+    const table = document.getElementById("adminMaterialsTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    sortDirection[columnIndex] = !sortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // For number columns like # and Copies
+        if (!isNaN(cellA) && !isNaN(cellB)) {
+            cellA = Number(cellA);
+            cellB = Number(cellB);
+        }
+
+        if (cellA < cellB) {
+            return sortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return sortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+let circulationSortDirection = {};
+
+function sortCirculationTable(columnIndex) {
+    const table = document.getElementById("circulationTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    circulationSortDirection[columnIndex] = !circulationSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // For date column
+        if (columnIndex === 2) {
+            cellA = new Date(cellA);
+            cellB = new Date(cellB);
+        }
+
+        if (cellA < cellB) {
+            return circulationSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return circulationSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+let usersSortDirection = {};
+
+function sortUsersTable(columnIndex) {
+    const table = document.getElementById("adminUsersTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    usersSortDirection[columnIndex] = !usersSortDirection[columnIndex];
+
+    rows.sort((a, b) => {
+        let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+        let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        // Date Joined column
+        if (columnIndex === 4) {
+            cellA = new Date(cellA);
+            cellB = new Date(cellB);
+        }
+
+        // UST ID column, if numeric
+        if (columnIndex === 1 && !isNaN(cellA) && !isNaN(cellB)) {
+            cellA = Number(cellA);
+            cellB = Number(cellB);
+        }
+
+        if (cellA < cellB) {
+            return usersSortDirection[columnIndex] ? -1 : 1;
+        }
+
+        if (cellA > cellB) {
+            return usersSortDirection[columnIndex] ? 1 : -1;
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+document.getElementById("r-role").value = role;
+
+function setFieldMessage(messageId, message, isValid) {
+    const msg = document.getElementById(messageId);
+
+    if (!msg) return;
+
+    msg.textContent = message;
+    msg.classList.remove("valid", "invalid");
+
+    if (message !== "") {
+        msg.classList.add(isValid ? "valid" : "invalid");
+    }
+}
+
+function validateFirstName() {
+    const fname = document.getElementById("r-fname").value.trim();
+
+    if (fname === "") {
+        setFieldMessage("fname-msg", "First name is required.", false);
+        return false;
+    }
+
+    setFieldMessage("fname-msg", "Valid first name.", true);
+    return true;
+}
+
+function validateLastName() {
+    const lname = document.getElementById("r-lname").value.trim();
+
+    if (lname === "") {
+        setFieldMessage("lname-msg", "Last name is required.", false);
+        return false;
+    }
+
+    setFieldMessage("lname-msg", "Valid last name.", true);
+    return true;
+}
+
+function validateUstId() {
+    const ustId = document.getElementById("r-id").value.trim();
+
+    if (ustId === "") {
+        setFieldMessage("ustid-msg", "UST ID number is required.", false);
+        return false;
+    }
+
+    if (ustId.length !== 10) {
+        setFieldMessage("ustid-msg", "UST ID must be exactly 10 digits.", false);
+        return false;
+    }
+
+    setFieldMessage("ustid-msg", "Valid UST ID number.", true);
+    return true;
+}
+
+function validateEmail() {
+    const email = document.getElementById("r-email").value.trim();
+    const ustEmailPattern = /^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$/;
+
+    if (email === "") {
+        setFieldMessage("email-msg", "Email address is required.", false);
+        return false;
+    }
+
+    if (email.length > 50) {
+        setFieldMessage("email-msg", "Email must not exceed 50 characters.", false);
+        return false;
+    }
+
+    if (!ustEmailPattern.test(email)) {
+        setFieldMessage("email-msg", "Use your UST email address only.", false);
+        return false;
+    }
+
+    setFieldMessage("email-msg", "Valid UST email address.", true);
+    return true;
+}
+
+function validateCourse() {
+    const course = document.getElementById("r-course").value;
+
+    if (course === "") {
+        setFieldMessage("course-msg", "Course or department is required.", false);
+        return false;
+    }
+
+    setFieldMessage("course-msg", "Course selected.", true);
+    return true;
+}
+
+function validateUsername() {
+    const username = document.getElementById("r-username").value.trim();
+    const usernamePattern = /^[A-Za-z0-9_]{5,30}$/;
+
+    if (username === "") {
+        setFieldMessage("username-msg", "Username is required.", false);
+        return false;
+    }
+
+    if (username.includes(" ")) {
+        setFieldMessage("username-msg", "Username cannot contain spaces.", false);
+        return false;
+    }
+
+    if (username.length < 5) {
+        setFieldMessage("username-msg", "Username must be at least 5 characters.", false);
+        return false;
+    }
+
+    if (username.length > 30) {
+        setFieldMessage("username-msg", "Username must not exceed 30 characters.", false);
+        return false;
+    }
+
+    if (!usernamePattern.test(username)) {
+        setFieldMessage("username-msg", "Use letters, numbers, and underscore only.", false);
+        return false;
+    }
+
+    setFieldMessage("username-msg", "Valid username.", true);
+    return true;
+}
+
+function validateYearLevel() {
+    const year = document.getElementById("r-year").value;
+
+    if (year === "") {
+        setFieldMessage("year-msg", "Year level is required.", false);
+        return false;
+    }
+
+    setFieldMessage("year-msg", "Year level selected.", true);
+    return true;
+}
+
+function validatePassword() {
+    const password = document.getElementById("r-pass").value;
+
+    if (password === "") {
+        setFieldMessage("password-msg", "Password is required.", false);
+        return false;
+    }
+
+    if (password.length < 8) {
+        setFieldMessage("password-msg", "Password must be at least 8 characters.", false);
+        return false;
+    }
+
+    if (password.length > 30) {
+        setFieldMessage("password-msg", "Password must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("password-msg", "Password length is valid.", true);
+    return true;
+}
+
+function validateConfirmPassword() {
+    const password = document.getElementById("r-pass").value;
+    const confirmPassword = document.getElementById("r-pass2").value;
+
+    if (confirmPassword === "") {
+        setFieldMessage("confirm-msg", "Please confirm your password.", false);
+        return false;
+    }
+
+    if (confirmPassword.length < 8) {
+        setFieldMessage("confirm-msg", "Confirm password must be at least 8 characters.", false);
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        setFieldMessage("confirm-msg", "Passwords do not match.", false);
+        return false;
+    }
+
+    setFieldMessage("confirm-msg", "Passwords match.", true);
+    return true;
+}
+
+function validateRegisterFormLive() {
+    return (
+        validateFirstName() &&
+        validateLastName() &&
+        validateUstId() &&
+        validateEmail() &&
+        validateCourse() &&
+        validateUsername() &&
+        validateYearLevel() &&
+        validatePassword() &&
+        validateConfirmPassword()
+    );
+}
+
+function validateLoginEmail() {
+    const email = document.getElementById("l-user").value.trim();
+    const ustEmailPattern = /^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$/;
+
+    if (email === "") {
+        setFieldMessage("login-email-msg", "Email address is required.", false);
+        return false;
+    }
+
+    if (email.length > 50) {
+        setFieldMessage("login-email-msg", "Email must not exceed 50 characters.", false);
+        return false;
+    }
+
+    if (!ustEmailPattern.test(email)) {
+        setFieldMessage("login-email-msg", "Use your UST email address only.", false);
+        return false;
+    }
+
+    setFieldMessage("login-email-msg", "Valid UST email address.", true);
+    return true;
+}
+
+function validateLoginPassword() {
+    const password = document.getElementById("l-pass").value;
+
+    if (password === "") {
+        setFieldMessage("login-password-msg", "Password is required.", false);
+        return false;
+    }
+
+    if (password.length < 8) {
+        setFieldMessage("login-password-msg", "Password must be at least 8 characters.", false);
+        return false;
+    }
+
+    if (password.length > 30) {
+        setFieldMessage("login-password-msg", "Password must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("login-password-msg", "Password length is valid.", true);
+    return true;
+}
+
+function validateLoginFormLive() {
+    return validateLoginEmail() && validateLoginPassword();
+}
+
+function validateForgotEmail() {
+    const email = document.getElementById("forgot-email").value.trim();
+    const ustEmailPattern = /^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$/;
+
+    if (email === "") {
+        setFieldMessage("forgot-email-msg", "Enter your registered UST email address.", false);
+        return false;
+    }
+
+    if (email.length > 50) {
+        setFieldMessage("forgot-email-msg", "Email must not exceed 50 characters.", false);
+        return false;
+    }
+
+    if (!ustEmailPattern.test(email)) {
+        setFieldMessage("forgot-email-msg", "Use your UST email address only.", false);
+        return false;
+    }
+
+    setFieldMessage("forgot-email-msg", "Valid UST email address.", true);
+    return true;
+}
+
+function resetPasswordFunc() {
+    const token = document.getElementById("reset-token").value;
+    const password = document.getElementById("new-password").value;
+    const confirmPassword = document.getElementById("confirm-new-password").value;
+
+    if (password.length < 8 || password.length > 30) {
+        alert("Password must be 8 to 30 characters.");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("token", token);
+    formData.append("password", password);
+    formData.append("confirm_password", confirmPassword);
+
+    fetch("../controllers/reset_password.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(result => {
+        result = result.trim();
+
+        if (result === "success") {
+            alert("Your password has been updated. You may now sign in.");
+            window.location.href = "LoginPage.php";
+        } else if (result === "invalid_token") {
+            alert("This reset link is invalid or expired.");
+        } else if (result === "not_match") {
+            alert("Passwords do not match.");
+        } else {
+            alert("Something went wrong. Please try again.");
+            console.log(result);
+        }
+    })
+    .catch(error => {
+        console.log("Reset password error:", error);
+        alert("Something went wrong. Please try again.");
+    });
+}
+
+function validateResetPassword() {
+    const password = document.getElementById("new-password").value;
+    const msg = document.getElementById("new-password-msg");
+
+    msg.classList.remove("valid", "invalid");
+
+    if (password === "") {
+        msg.textContent = "";
+        return false;
+    }
+
+    if (password.length < 8) {
+        msg.textContent = "Password must be at least 8 characters.";
+        msg.classList.add("invalid");
+        return false;
+    }
+
+    if (password.length > 30) {
+        msg.textContent = "Password must not exceed 30 characters.";
+        msg.classList.add("invalid");
+        return false;
+    }
+
+    msg.textContent = "Password length is valid.";
+    msg.classList.add("valid");
+    return true;
+}
+
+function validateResetConfirmPassword() {
+    const password = document.getElementById("new-password").value;
+    const confirmPassword = document.getElementById("confirm-new-password").value;
+    const msg = document.getElementById("confirm-new-password-msg");
+
+    msg.classList.remove("valid", "invalid");
+
+    if (confirmPassword === "") {
+        msg.textContent = "";
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        msg.textContent = "Passwords do not match.";
+        msg.classList.add("invalid");
+        return false;
+    }
+
+    msg.textContent = "Passwords match.";
+    msg.classList.add("valid");
+    return true;
+}
+
+function validateEditFirstName() {
+    const fname = document.getElementById("edit-fname").value.trim();
+
+    if (fname === "") {
+        setFieldMessage("edit-fname-msg", "First name is required.", false);
+        return false;
+    }
+
+    if (fname.length > 30) {
+        setFieldMessage("edit-fname-msg", "First name must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-fname-msg", "Valid first name.", true);
+    return true;
+}
+
+function validateEditLastName() {
+    const lname = document.getElementById("edit-lname").value.trim();
+
+    if (lname === "") {
+        setFieldMessage("edit-lname-msg", "Last name is required.", false);
+        return false;
+    }
+
+    if (lname.length > 30) {
+        setFieldMessage("edit-lname-msg", "Last name must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-lname-msg", "Valid last name.", true);
+    return true;
+}
+
+function validateEditEmail() {
+    const email = document.getElementById("edit-email").value.trim();
+    const ustEmailPattern = /^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$/;
+
+    if (email === "") {
+        setFieldMessage("edit-email-msg", "Email address is required.", false);
+        return false;
+    }
+
+    if (email.length > 50) {
+        setFieldMessage("edit-email-msg", "Email must not exceed 50 characters.", false);
+        return false;
+    }
+
+    if (!ustEmailPattern.test(email)) {
+        setFieldMessage("edit-email-msg", "Use your UST email address only.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-email-msg", "Valid UST email address.", true);
+    return true;
+}
+
+function validateEditPassword() {
+    const password = document.getElementById("edit-pass").value;
+
+    if (password === "") {
+        setFieldMessage("edit-pass-msg", "", false);
+        return true; 
+    }
+
+    if (password.length < 8) {
+        setFieldMessage("edit-pass-msg", "Password must be at least 8 characters.", false);
+        return false;
+    }
+
+    if (password.length > 30) {
+        setFieldMessage("edit-pass-msg", "Password must not exceed 30 characters.", false);
+        return false;
+    }
+
+    setFieldMessage("edit-pass-msg", "New password length is valid.", true);
+    return true;
+}
+
+function validateEditProfileForm() {
+    return (
+        validateEditFirstName() &&
+        validateEditLastName() &&
+        validateEditEmail() &&
+        validateEditPassword()
+    );
+}
+
+function toggleNotifications() {
+    const panel = document.getElementById("notifPanel");
+
+    if (!panel) return;
+
+    panel.classList.toggle("open");
+    loadNotifications();
+}
+
+function loadNotifications() {
+    fetch("../controllers/fetch_notifications.php")
+        .then(response => response.json())
+        .then(data => {
+            const count = document.getElementById("notifCount");
+            const list = document.getElementById("notifList");
+
+            if (!count || !list) return;
+
+            if (data.unread > 0) {
+                count.style.display = "flex";
+                count.textContent = data.unread;
+            } else {
+                count.style.display = "none";
+            }
+
+            if (!data.notifications || data.notifications.length === 0) {
+                list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
+                return;
+            }
+
+            list.innerHTML = data.notifications.map(notif => {
+                const unreadClass = notif.is_read == 0 ? "unread" : "";
+
+                return `
+                    <div class="notif-item ${unreadClass}">
+                        <div class="notif-title">${escapeHtml(notif.title)}</div>
+                        <div class="notif-message">${escapeHtml(notif.message)}</div>
+                        <div class="notif-time">${escapeHtml(notif.created_at)}</div>
+                    </div>
+                `;
+            }).join("");
+        })
+        .catch(error => {
+            console.log("Notification fetch error:", error);
+        });
+}
+
+function markNotificationsRead() {
+    fetch("../controllers/mark_notifications_read.php", {
+        method: "POST"
+    })
+    .then(response => response.text())
+    .then(result => {
+        if (result.trim() === "success") {
+            loadNotifications();
+        }
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("notifPanel")) {
+        loadNotifications();
+        setInterval(loadNotifications, 10000);
     }
 });

@@ -10,7 +10,8 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
-<body>
+
+<body class="auth-page">
 
 <div id="page-register" class="screen page active">
 
@@ -79,9 +80,10 @@
         <div class="alert success" id="reg-success"></div>
 
         <div class="field-group fade-up">
-            <label>I am a</label>
-            <div class="role-select" role="group" aria-label="Select your role">
+            <label>I am a <span class="required">*</span></label>
+            <input type="hidden" id="r-role" name="role" value="student">
 
+            <div class="role-select" role="group" aria-label="Select your role">
                 <div class="role-chip selected" id="chip-student"
                     role="radio" aria-checked="true" tabindex="0"
                     onclick="selectRole('student')"
@@ -103,13 +105,12 @@
                     </svg>
                     Faculty
                 </div>
-
             </div>
         </div>
 
         <div class="field-row fade-up-2">
             <div class="field-group">
-                <label for="r-fname">First Name</label>
+                <label for="r-fname">First Name <span class="required">*</span></label>
                 <div class="field-wrap">
                     <span class="field-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24">
@@ -117,12 +118,16 @@
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
                     </span>
-                    <input type="text" id="r-fname" placeholder="Juan" autocomplete="given-name" required />
+                    <input type="text" id="r-fname" name="first_name"
+                        placeholder="Juan" autocomplete="given-name" maxlength="30"
+                        oninput="this.value = this.value.replace(/[^A-Za-zÑñ\s'-]/g, ''); validateFirstName();"
+                        required />
                 </div>
+                <small class="field-msg" id="fname-msg"></small>
             </div>
 
             <div class="field-group">
-                <label for="r-lname">Last Name</label>
+                <label for="r-lname">Last Name <span class="required">*</span></label>
                 <div class="field-wrap">
                     <span class="field-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24">
@@ -130,13 +135,17 @@
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
                     </span>
-                    <input type="text" id="r-lname" placeholder="Santos" autocomplete="family-name" required />
+                    <input type="text" id="r-lname" name="last_name"
+                        placeholder="Santos" autocomplete="family-name" maxlength="30"
+                        oninput="this.value = this.value.replace(/[^A-Za-zÑñ\s'-]/g, ''); validateLastName();"
+                        required />
                 </div>
+                <small class="field-msg" id="lname-msg"></small>
             </div>
         </div>
 
         <div class="field-group fade-up-2">
-            <label for="r-id">UST ID Number</label>
+            <label for="r-id">UST ID Number <span class="required">*</span></label>
             <div class="field-wrap">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -144,16 +153,19 @@
                         <path d="M16 10h2M16 14h2M6 10h6M6 14h4"/>
                     </svg>
                 </span>
-                <input type="text" id="r-id"
+                <input type="text" id="r-id" name="ust_id"
                     placeholder="e.g., 2026XXXXXX"
-                    pattern="^\d{4}-\d{5}-[A-Z]{2}-\d$"
-                    title="Format: YYYY-NNNNN-XX-N"
-                    autocomplete="off" required />
+                    pattern="^\d{10}$" maxlength="10"
+                    title="UST ID must contain 10 digits only"
+                    autocomplete="off"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateUstId();"
+                    required />
             </div>
+            <small class="field-msg" id="ustid-msg"></small>
         </div>
 
         <div class="field-group fade-up-3">
-            <label for="r-email">Email Address</label>
+            <label for="r-email">Email Address <span class="required">*</span></label>
             <div class="field-wrap">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -161,14 +173,20 @@
                         <polyline points="22,6 12,13 2,6"/>
                     </svg>
                 </span>
-                <input type="email" id="r-email"
+                <input type="email" id="r-email" name="email"
                     placeholder="juan.santos@ust.edu.ph"
-                    autocomplete="email" required />
+                    pattern="^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$"
+                    maxlength="50"
+                    title="UST email only"
+                    autocomplete="email"
+                    oninput="validateEmail();"
+                    required />
             </div>
+            <small class="field-msg" id="email-msg"></small>
         </div>
 
         <div class="field-group fade-up-3" id="course-group">
-            <label for="r-course">Course / Department</label>
+            <label for="r-course">Course / Department <span class="required">*</span></label>
             <div class="field-wrap">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -176,19 +194,19 @@
                         <polyline points="9 22 9 12 15 12 15 22"/>
                     </svg>
                 </span>
-                <select id="r-course" required>
+                <select id="r-course" name="course" onchange="validateCourse();" required>
                     <option value="" disabled selected>Select your course / department</option>
                     <option value="BS Computer Science">BS Computer Science</option>
                     <option value="BS Information Technology">BS Information Technology</option>
                     <option value="BS Information Systems">BS Information Systems</option>
                 </select>
             </div>
+            <small class="field-msg" id="course-msg"></small>
         </div>
 
         <div class="field-row fade-up-3">
-
             <div class="field-group">
-                <label for="r-username">Username</label>
+                <label for="r-username">Username <span class="required">*</span></label>
                 <div class="field-wrap">
                     <span class="field-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24">
@@ -196,15 +214,17 @@
                             <circle cx="12" cy="7" r="4"/>
                         </svg>
                     </span>
-                    <input type="text" id="r-username"
-                        placeholder="username"
+                    <input type="text" id="r-username" name="username"
+                        placeholder="username" maxlength="30"
                         autocomplete="username"
+                        oninput="validateUsername();"
                         required />
                 </div>
+                <small class="field-msg" id="username-msg"></small>
             </div>
 
             <div class="field-group" id="year-group">
-                <label for="r-year">Year Level</label>
+                <label for="r-year">Year Level <span class="required">*</span></label>
                 <div class="field-wrap">
                     <span class="field-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24">
@@ -214,7 +234,7 @@
                             <line x1="3" y1="10" x2="21" y2="10"/>
                         </svg>
                     </span>
-                    <select id="r-year" required>
+                    <select id="r-year" name="year_level" onchange="validateYearLevel();" required>
                         <option value="" disabled selected>Select</option>
                         <option value="1st Year">1st Year</option>
                         <option value="2nd Year">2nd Year</option>
@@ -222,12 +242,12 @@
                         <option value="4th Year">4th Year</option>
                     </select>
                 </div>
+                <small class="field-msg" id="year-msg"></small>
             </div>
-
         </div>
 
         <div class="field-group fade-up-4">
-            <label for="r-pass">Password</label>
+            <label for="r-pass">Password <span class="required">*</span></label>
             <div class="field-wrap">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -235,20 +255,22 @@
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
                 </span>
-                <input type="password" id="r-pass"
-                    placeholder="Minimum 6 characters"
+                <input type="password" id="r-pass" name="password"
+                    placeholder="Minimum 8 characters"
                     autocomplete="new-password"
-                    oninput="checkStrength()"
+                    minlength="8" maxlength="30"
+                    oninput="checkStrength(); validatePassword(); validateConfirmPassword();"
                     required />
             </div>
             <div class="strength-bar">
                 <div class="strength-fill" id="strength-fill"></div>
             </div>
             <div id="strength-text"></div>
+            <small class="field-msg" id="password-msg"></small>
         </div>
 
         <div class="field-group fade-up-4">
-            <label for="r-pass2">Confirm Password</label>
+            <label for="r-pass2">Confirm Password <span class="required">*</span></label>
             <div class="field-wrap">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -256,11 +278,14 @@
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
                 </span>
-                <input type="password" id="r-pass2"
+                <input type="password" id="r-pass2" name="confirm_password"
                     placeholder="Repeat your password"
                     autocomplete="new-password"
+                    minlength="8" maxlength="30"
+                    oninput="validateConfirmPassword();"
                     required />
             </div>
+            <small class="field-msg" id="confirm-msg"></small>
         </div>
 
         <button class="btn-gold" type="button" onclick="doRegister()" style="margin-top: 8px;">

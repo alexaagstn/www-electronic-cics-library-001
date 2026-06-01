@@ -14,7 +14,8 @@ session_start();
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
-<body>
+
+<body class="auth-page">
 
 <div id="page-login" class="screen page active">
 
@@ -80,7 +81,7 @@ session_start();
         <div class="alert error" id="login-alert" role="alert" aria-live="polite"></div>
 
         <div class="field-group fade-up">
-            <label for="l-user">Email Address</label>
+            <label for="l-user">Email Address <span class="required">*</span></label>
             <div class="field-wrap">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -88,12 +89,26 @@ session_start();
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
                 </span>
-                <input type="email" id="l-user" placeholder="e.g. juan@ust.edu.ph" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" required />
+
+                <input 
+                    type="email" 
+                    id="l-user" 
+                    name="email"
+                    placeholder="e.g. juan@ust.edu.ph" 
+                    autocomplete="username" 
+                    maxlength="50"
+                    pattern="^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$"
+                    title="Use your UST email address only"
+                    oninput="validateLoginEmail();"
+                    onkeydown="if(event.key==='Enter')doLogin()" 
+                    required 
+                />
             </div>
+            <small class="login-msg" id="login-email-msg"></small>
         </div>
 
         <div class="field-group fade-up-2">
-            <label for="l-pass">Password</label>
+            <label for="l-pass">Password <span class="required">*</span></label>
             <div class="field-wrap" style="position: relative;">
                 <span class="field-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -101,16 +116,30 @@ session_start();
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
                 </span>
-                <input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" required />
+
+                <input 
+                    type="password" 
+                    id="l-pass" 
+                    name="password"
+                    placeholder="Enter your password" 
+                    autocomplete="current-password" 
+                    minlength="8" 
+                    maxlength="30"
+                    oninput="validateLoginPassword();"
+                    onkeydown="if(event.key==='Enter')doLogin()" 
+                    required 
+                />
+
                 <button type="button" class="pass-toggle" onclick="togglePass('l-pass')" aria-label="Show or hide password" title="Toggle visibility"></button>
             </div>
+            <small class="login-msg" id="login-password-msg"></small>
         </div>
 
         <a class="forgot-link fade-up-2"
-           onclick="showForgotNotice()"
-           role="button"
-           tabindex="0"
-           onkeydown="if(event.key==='Enter')showForgotNotice()">
+            onclick="openForgotModal()"
+            role="button"
+            tabindex="0"
+            onkeydown="if(event.key==='Enter')openForgotModal()">
             Forgot password?
         </a>
 
@@ -129,6 +158,39 @@ session_start();
         </div>
 
     </div>
+</div>
+
+<div class="forgot-modal" id="forgotModal">
+
+    <div class="forgot-box">
+
+        <button class="forgot-close" onclick="closeForgotModal()">×</button>
+
+        <h3>Forgot Password</h3>
+
+        <p>
+            Enter your registered UST email address. If the account exists,
+            password reset instructions will be sent.
+        </p>
+
+        <input 
+            type="email"
+            id="forgot-email"
+            name="forgot_email"
+            placeholder="example@ust.edu.ph"
+            maxlength="50"
+            pattern="^[a-zA-Z0-9._%+-]+@ust\.edu\.ph$"
+            oninput="validateForgotEmail();"
+        >
+
+        <small class="login-msg" id="forgot-email-msg"></small>
+
+        <button class="forgot-send" onclick="sendResetFunc()">
+            Send Reset Instructions
+        </button>
+
+    </div>
+
 </div>
 
 <script src="../scripts/service.js"></script>
